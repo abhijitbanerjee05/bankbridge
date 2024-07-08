@@ -43,12 +43,13 @@ const MobileNav = ({ user }: MobileNavProps) => {
                                             className={cn('mobilenav-sheet_close w-full', { 'bg-bank-gradient': isActive })}
                                         >
                                                 <Image src={item.imgURL} width={20} height={20} alt={item.label} className={cn({ 'brightness-[3] invert-0': isActive })} />
-                                          \
-                                            <p className={cn('sidebar-label', { '!text-white': isActive })}>{item.label}</p>
+                                            <p className={cn('text-16 font-semibold text-black-2', { '!text-white': isActive })}>{item.label}</p>
                                         </Link>
                                         </SheetClose>
                                     )
                                 })}
+
+                                USER DATA
                             </nav>
                         </SheetClose>
                     </div>
