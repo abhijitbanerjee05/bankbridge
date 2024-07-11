@@ -14,7 +14,6 @@ import { useRouter } from 'next/navigation'
 import { signUp } from '@/lib/actions/user.actions'
 import { usePlaidLink, PlaidLinkOptions, PlaidLinkOnSuccess } from 'react-plaid-link';
 import axios from 'axios';
-import { url } from 'inspector'
 
 const AuthForm = ({ type }: { type: string }) => {
     axios.defaults.baseURL = 'http://localhost:8080/api';
@@ -73,6 +72,7 @@ const AuthForm = ({ type }: { type: string }) => {
         //   user,
         // })
     
+        console.log(public_token)
         router.push('/');
         console.log("Link Successful!!")
       }, [user])
