@@ -1,9 +1,13 @@
 import HeaderBox from '@/components/HeaderBox'
 import TotalBalanceBox from '@/components/TotalBalanceBox'
-import React from 'react'
+import TransactionsTable from '@/components/TransactionsTable'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import RecentTransactions from '@/components/RecentTransactions';
 
 const Home = () => {
   const loggedIn = { firstName: 'Abhijit' }
+
   return (
     <section className='home'>
       <div className='home-content'>
@@ -18,6 +22,8 @@ const Home = () => {
             totalBanks={1}
             totalCurrentBalance={1850.30}
           />
+
+          <RecentTransactions />
         </header>
       </div>
     </section>
