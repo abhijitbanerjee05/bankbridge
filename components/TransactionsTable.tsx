@@ -1,5 +1,4 @@
-"use client"
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import {
     Table,
     TableBody,
@@ -11,6 +10,7 @@ import {
 
 import axios from 'axios';
 import { getTransactionStatus, formatAmount, removeSpecialCharacters, formatDateTime } from '@/lib/utils';
+import Image from 'next/image';
 
 interface TransactionsTableProps {
     transactions?: Transaction[];
@@ -33,7 +33,7 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody>
-                    {transactions?.map((t: Transaction) => {
+                    {transactions && transactions.length != 0 && transactions.map((t: Transaction) => {
                         const status = getTransactionStatus(new Date(t.date))
                         const amount = formatAmount(t.amount)
 
@@ -42,6 +42,13 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
                         return (<TableRow key={t.id} className={`${isDebit || amount[0] === '-' ? 'bg-[#FFFBFA]' : 'bg-[#F6FEF9]'} !over:bg-none !border-b-DEFAULT`}>
                             <TableCell className="max-w-[250px] pl-2 pr-10">
                                 <div className="flex items-center gap-3">
+                                    {t.logoUrl && <Image
+                                        src={t.logoUrl}
+                                        width={30}
+                                        height={30}
+                                        alt='transaction logo'
+                                        className='rounded-full'
+                                    />}
                                     <h1 className="text-14 truncate font-semibold text-[#344054]">
                                         {removeSpecialCharacters(t.name)}
                                     </h1>
@@ -74,7 +81,9 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
                     })}
                 </TableBody>
             </Table>
-            
+
+            {transactions && transactions.length === 0 && <h2 className='mx-auto no-transactions-label'>No transactions available</h2>}
+
         </>
     )
 }

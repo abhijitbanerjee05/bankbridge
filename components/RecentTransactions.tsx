@@ -2,6 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import TransactionsTable from './TransactionsTable';
+import AccountSelectionTab from './AccountSelectionTab';
+import { CgSpinner } from "react-icons/cg";
 import {
     Pagination,
     PaginationContent,
@@ -15,6 +17,7 @@ import {
 const RecentTransactions = () => {
     axios.defaults.baseURL = 'http://localhost:8080/user-service';
     const [transactions, setTransactions] = useState<Transaction[]>([])
+    const [loading, setLoading] = useState(true);
 
     const transactionsRequest = {
         userId: "d43cc601-df38-477e-8362-e85e51109690",
@@ -28,13 +31,18 @@ const RecentTransactions = () => {
             const response = await axios.post("/transactions", transactionsRequest);
             console.log(response.data.transactions);
             setTransactions(response.data?.transactions)
+            setLoading(false)
         }
         fetch()
     }, []);
     return (
         <>
         <h2 className='text-xl font-bold'>Recent Transactions</h2>
-        <TransactionsTable transactions={transactions}/>
+        <AccountSelectionTab />
+        {
+            loading ? <div className='py-8 mx-auto'><CgSpinner  className='h-10 w-10 loader' /></div>
+                    : <TransactionsTable transactions={transactions}/>
+        }
         <Pagination>
                 <PaginationContent>
                     <PaginationItem>

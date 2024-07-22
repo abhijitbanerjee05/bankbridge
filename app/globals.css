@@ -145,6 +145,10 @@
     @apply flex w-full flex-col gap-6;
   }
 
+  .no-transactions-label {
+    @apply text-16 font-medium text-gray-600;
+  }
+
   .recent-transactions-label {
     @apply text-20 md:text-24 font-semibold text-gray-900;
   }
@@ -297,6 +301,15 @@
 
   .form-link {
     @apply text-14 cursor-pointer font-medium text-bankGradient;
+  }
+
+  .loader {
+    animation: spin 1.5s linear infinite;
+  }
+  
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
   }
 
   /* Payment Transfer */
