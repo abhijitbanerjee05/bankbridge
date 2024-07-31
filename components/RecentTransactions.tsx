@@ -13,27 +13,26 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
+import { fetchTransactions } from '@/lib/actions/user.actions';
 
 const RecentTransactions = () => {
     axios.defaults.baseURL = 'http://localhost:8080/user-service';
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(true);
 
-    const transactionsRequest = {
-        userId: "d43cc601-df38-477e-8362-e85e51109690",
-        startDate: "2024-01-01",
-        endDate: "2024-06-01",
-        pageNumber: 1
-    }
-
     useEffect(() => {
-        async function fetch() {
-            const response = await axios.post("/transactions", transactionsRequest);
-            console.log(response.data.transactions);
-            setTransactions(response.data?.transactions)
-            setLoading(false)
-        }
-        fetch()
+        const loadTransactions = async () => {
+            try {
+              const transactions = await fetchTransactions();
+              setTransactions(transactions);
+            } catch (error) {
+              console.error("Error fetching transactions", error);
+            } finally {
+              setLoading(false);
+            }
+          };
+      
+          loadTransactions();
     }, []);
     return (
         <>

@@ -1,14 +1,35 @@
+"use client"
 import BankCard from '@/components/BankCard'
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import HeaderBox from '@/components/HeaderBox'
+import { CgSpinner } from "react-icons/cg";
+import { fetchBankAccounts } from '@/lib/actions/user.actions'
 
 const MyBanks = () => {
+
   let account: Account = {
     name: 'CIBC',
     currentBalance: 1200,
     mask: '1234'
-
   }
+  const [bankAccounts, setBankAccounts] = useState<Account[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const loadBankAccounts = async () => {
+      try {
+        const accounts = await fetchBankAccounts();
+        setBankAccounts(accounts);
+      } catch (error) {
+        console.error("Error fetching bank accounts", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadBankAccounts();
+  }, []);
+
   return (
     <section className='flex'>
       <div className="my-banks">
@@ -21,17 +42,22 @@ const MyBanks = () => {
           <h2 className="header-2">
             Your cards
           </h2>
-          <div className="flex flex-wrap gap-6">
-            {/* {accounts && accounts.data.map((a: Account) => (
-              <BankCard 
-                key={accounts.id}
-                account={a}
-                userName={loggedIn?.firstName}
-              />
-            ))} */}
+          {
+            loading ? <div className='pt-20 flex justify-center'><CgSpinner className='h-10 w-10 loader' /></div>
+              :
+              <div className="flex flex-wrap gap-6">
+                {bankAccounts && bankAccounts.map((a: Account) => (
+                  <BankCard
+                    key={a.name}
+                    account={a}
+                    userName={'Abhijit'}
+                  />
+                ))}
 
-            <BankCard account={account} userName='Abhijit' />
-          </div>
+
+                {/* <BankCard account={account} userName='Abhijit' /> */}
+              </div>
+          }
         </div>
       </div>
     </section>
