@@ -49,17 +49,17 @@ declare type NewUserParams = {
 };
 
 declare type Account = {
-  id: string;
-  availableBalance: number;
+  accountId?: string,
+  availableBalance?: number;
   currentBalance: number;
-  officialName: string;
-  mask: string;
-  institutionId: string;
+  officialName?: string;
+  mask?: string;
+  institutionId?: string;
   name: string;
-  type: string;
-  subtype: string;
-  appwriteItemId: string;
-  sharableId: string;
+  type?: string;
+  subtype?: string;
+  appwriteItemId?: string;
+  sharableId?: string;
 };
 
 declare type Transaction = {
@@ -79,6 +79,7 @@ declare type Transaction = {
   channel: string;
   senderBankId: string;
   receiverBankId: string;
+  logoUrl: string;
 };
 
 declare type Bank = {
