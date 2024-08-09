@@ -39,7 +39,7 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
 
                         const isDebit = t.type === 'debit';
                         const isCredit = t.type === 'credit';
-                        return (<TableRow key={t.id} className={`${isDebit || amount[0] === '-' ? 'bg-[#FFFBFA]' : 'bg-[#F6FEF9]'} !over:bg-none !border-b-DEFAULT`}>
+                        return (<TableRow key={t.name} className={`${isDebit || amount[0] === '-' ? 'bg-[#FFFBFA]' : 'bg-[#F6FEF9]'} !over:bg-none !border-b-DEFAULT`}>
                             <TableCell className="max-w-[250px] pl-2 pr-10">
                                 <div className="flex items-center gap-3">
                                     {t.logoUrl && <Image

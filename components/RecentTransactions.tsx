@@ -1,6 +1,5 @@
 "use client"
 import React, { useEffect, useState } from 'react';
-import axios from 'axios';
 import TransactionsTable from './TransactionsTable';
 import AccountSelectionTab from './AccountSelectionTab';
 import { CgSpinner } from "react-icons/cg";
@@ -13,17 +12,16 @@ import {
     PaginationNext,
     PaginationPrevious,
 } from "@/components/ui/pagination";
-import { fetchTransactions } from '@/lib/actions/user.actions';
+import { fetchAllTransactions } from '@/lib/actions/user.actions';
 
 const RecentTransactions = () => {
-    axios.defaults.baseURL = 'http://localhost:8080/user-service';
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const loadTransactions = async () => {
             try {
-              const transactions = await fetchTransactions();
+              const transactions = await fetchAllTransactions();
               setTransactions(transactions);
             } catch (error) {
               console.error("Error fetching transactions", error);

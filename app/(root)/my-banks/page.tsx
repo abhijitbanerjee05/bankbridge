@@ -6,12 +6,6 @@ import { CgSpinner } from "react-icons/cg";
 import { fetchBankAccounts } from '@/lib/actions/user.actions'
 
 const MyBanks = () => {
-
-  let account: Account = {
-    name: 'CIBC',
-    currentBalance: 1200,
-    mask: '1234'
-  }
   const [bankAccounts, setBankAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
 

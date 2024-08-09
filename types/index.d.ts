@@ -49,12 +49,13 @@ declare type NewUserParams = {
 };
 
 declare type Account = {
+  accountId?: string,
   availableBalance?: number;
   currentBalance: number;
   officialName?: string;
   mask?: string;
   institutionId?: string;
-  name?: string;
+  name: string;
   type?: string;
   subtype?: string;
   appwriteItemId?: string;
