@@ -17,7 +17,7 @@ const TransactionHistory = () => {
   const [bankAccounts, setBankAccounts] = useState<Account[]>([]);
   const [currentBankAccount, setCurrentBankAccount] = useState<Account>();
   const [loading, setLoading] = useState(true);
-  const [isAccordionOpen, setIsAccordionOpen] = useState<string | undefined>('current-bank-account');
+  const [isAccordionOpen, setIsAccordionOpen] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -64,7 +64,11 @@ const TransactionHistory = () => {
 
   const onAccountClick = (account: Account) => {
     setCurrentBankAccount(account);
-    setIsAccordionOpen(undefined);
+    if (isAccordionOpen === 'current-bank-account') {
+      setIsAccordionOpen(undefined);
+    } else {
+      setIsAccordionOpen('current-bank-account')
+    }
     const fetchTransactions = async () => {
       await loadTransactions(account);
     };
