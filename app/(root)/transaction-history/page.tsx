@@ -55,7 +55,7 @@ const TransactionHistory = () => {
 
   const loadTransactions = async (account: Account) => {
     try {
-      const transactions = await fetchAccountTransactions(account);
+      const transactions = await fetchAccountTransactions(account, 1, 10);
       setTransactions(transactions);
     } catch (error) {
       console.error("Error fetching transactions", error);

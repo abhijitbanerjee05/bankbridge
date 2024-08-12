@@ -17,7 +17,7 @@ interface TransactionsTableProps {
 }
 
 const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
-    axios.defaults.baseURL = 'http://localhost:8080/user-service';
+    axios.defaults.baseURL = 'http://localhost:8080/api';
 
     return (
         <>
