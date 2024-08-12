@@ -1,7 +1,7 @@
 "use server"
 import axios from "axios";
 
-axios.defaults.baseURL = 'http://localhost:8080/user-service';
+axios.defaults.baseURL = 'http://localhost:8080/api';
 
 export const signIn = async () => {
     try {
@@ -19,24 +19,26 @@ export const signUp = async (userData: SignUpParams) => {
     }
 }
 
-export const fetchAllTransactions = async () : Promise<Transaction[]> => {
+export const fetchAllTransactions = async (pageNumber : number, pageCount: number) : Promise<Transaction[]> => {
     const transactionsRequest = {
         userId: "d43cc601-df38-477e-8362-e85e51109690",
         startDate: "2024-01-01",
         endDate: "2024-06-01",
-        pageNumber: 1
+        pageNumber: pageNumber,
+        pageCount: pageCount
     }
     const response = await axios.post("/transactions", transactionsRequest);
     console.log(response.data.transactions);
     return response.data?.transactions;
 }
 
-export const fetchAccountTransactions = async (account : Account) : Promise<Transaction[]> => {
+export const fetchAccountTransactions = async (account : Account, pageNumber : number, pageCount: number) : Promise<Transaction[]> => {
     const transactionsRequest = {
         userId: "d43cc601-df38-477e-8362-e85e51109690",
         startDate: "2024-01-01",
         endDate: "2024-06-01",
-        pageNumber: 1,
+        pageNumber: pageNumber,
+        pageCount: pageCount,
         accountId: account.accountId
     }
     const response = await axios.post("/transactions", transactionsRequest);

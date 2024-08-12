@@ -3,9 +3,9 @@ import { FormControl, FormField, FormLabel, FormMessage } from './ui/form'
 import { Input } from './ui/input'
 import { Control, FieldPath } from 'react-hook-form'
 import { z } from "zod"
-import { signInFormSchema } from '@/lib/utils'
+import { signUpFormSchema } from '@/lib/utils'
 
-const formSchema = signInFormSchema()
+const formSchema = signUpFormSchema()
 
 interface CustomInput {
     control: Control<z.infer<typeof formSchema>>,
@@ -14,7 +14,7 @@ interface CustomInput {
     placeholder: string
 }
 
-const CustomSignInInput = ({ control, name, label, placeholder }: CustomInput) => {
+const CustomSignUpInput = ({ control, name, label, placeholder }: CustomInput) => {
     return (
         <FormField
             control={control}
@@ -41,4 +41,4 @@ const CustomSignInInput = ({ control, name, label, placeholder }: CustomInput) =
     )
 }
 
-export default CustomSignInInput
+export default CustomSignUpInput

@@ -14,6 +14,8 @@ import Link from 'next/link'
 import { sidebarLinks } from '@/constants'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { IoIosLogOut } from "react-icons/io";
 
 
 const MobileNav = ({ user }: MobileNavProps) => {
@@ -32,24 +34,34 @@ const MobileNav = ({ user }: MobileNavProps) => {
 
                     <div className='mobilenav-sheet'>
                         <SheetClose asChild>
-                            <nav className='flex h-full flex-col gap-6 pt-16 text-white'>
-                                {sidebarLinks.map((item) => {
+                            <nav className='flex h-full flex-col justify-between gap-6 text-white'>
+                                <div>
+                                    {sidebarLinks.map((item) => {
 
-                                    const isActive = pathname === item.route || pathname.startsWith(`${item.route}/`)
+                                        const isActive = pathname === item.route || pathname.startsWith(`${item.route}/`)
 
-                                    return (
-                                        <SheetClose asChild key={item.route}>
-                                            <Link href={item.route} key={item.label}
-                                            className={cn('mobilenav-sheet_close w-full', { 'bg-bank-gradient': isActive })}
-                                        >
-                                                <Image src={item.imgURL} width={20} height={20} alt={item.label} className={cn({ 'brightness-[3] invert-0': isActive })} />
-                                            <p className={cn('text-16 font-semibold text-black-2', { '!text-white': isActive })}>{item.label}</p>
-                                        </Link>
-                                        </SheetClose>
-                                    )
-                                })}
-
-                                USER DATA
+                                        return (
+                                            <SheetClose asChild key={item.route}>
+                                                <Link href={item.route} key={item.label}
+                                                    className={cn('mobilenav-sheet_close w-full', { 'bg-bank-gradient': isActive })}
+                                                >
+                                                    <Image src={item.imgURL} width={20} height={20} alt={item.label} className={cn({ 'brightness-[3] invert-0': isActive })} />
+                                                    <p className={cn('text-16 font-semibold text-black-2', { '!text-white': isActive })}>{item.label}</p>
+                                                </Link>
+                                            </SheetClose>
+                                        )
+                                    })}
+                                </div>
+                                <div className='py-3 text-gray-800 flex items-center justify-between gap-2'>
+                                    <div className='flex gap-4 items-center truncate'>
+                                        <Avatar className='cursor-pointer'>
+                                            <AvatarImage src="images/blank-profile-picture.png" />
+                                            <AvatarFallback>CN</AvatarFallback>
+                                        </Avatar>
+                                        <h2 className='cursor-pointer'>Abhijit Banerjee</h2>
+                                    </div>
+                                    <IoIosLogOut className='cursor-pointer h-6 w-6' />
+                                </div>
                             </nav>
                         </SheetClose>
                     </div>
