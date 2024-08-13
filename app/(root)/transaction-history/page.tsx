@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/accordion"
 import HeaderBox from '@/components/HeaderBox';
 import { CgSpinner } from "react-icons/cg";
+import TransactionsPagination from '@/components/TransactionsPagination';
 
 const TransactionHistory = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
@@ -18,6 +19,8 @@ const TransactionHistory = () => {
   const [currentBankAccount, setCurrentBankAccount] = useState<Account>();
   const [loading, setLoading] = useState(true);
   const [isAccordionOpen, setIsAccordionOpen] = useState<string | undefined>(undefined);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState<number>(0)
 
   useEffect(() => {
     const fetchData = async () => {
@@ -27,7 +30,7 @@ const TransactionHistory = () => {
         const currentAccount = await loadBankAccounts();
 
         if (currentAccount) {
-          await loadTransactions(currentAccount);
+          await loadTransactions(currentAccount, 1);
         }
       } catch (error) {
         console.error("Error during fetching data", error);
@@ -53,12 +56,17 @@ const TransactionHistory = () => {
     return undefined;
   };
 
-  const loadTransactions = async (account: Account) => {
+  const loadTransactions = async (account: Account, page: number) => {
+    setLoading(true);
     try {
-      const transactions = await fetchAccountTransactions(account, 1, 10);
-      setTransactions(transactions);
+      const transactionsData = await fetchAccountTransactions(account, page, 10);
+      setTransactions(transactionsData?.transactions);
+      setTransactions(transactionsData?.transactions);
+      setTotalPages(transactionsData?.totalPages)
     } catch (error) {
       console.error("Error fetching transactions", error);
+    } finally {
+      setLoading(false)
     }
   };
 
@@ -70,10 +78,20 @@ const TransactionHistory = () => {
       setIsAccordionOpen('current-bank-account')
     }
     const fetchTransactions = async () => {
-      await loadTransactions(account);
+      await loadTransactions(account, 1);
     };
     fetchTransactions();
   };
+
+  const handlePageClick = (page: number) => {
+    const fetchTransactions = async (page: number) => {
+      if (currentBankAccount) {
+        await loadTransactions(currentBankAccount, page);
+      }
+    }
+    setCurrentPage(page)
+    fetchTransactions(page);
+  }
 
   return (
     <div className='m-8'>
@@ -114,6 +132,10 @@ const TransactionHistory = () => {
       ) : (
         <TransactionsTable transactions={transactions} />
       )}
+      <div className='my-4'>
+        <TransactionsPagination currentPage={currentPage} totalPages={totalPages} handlePageClick={handlePageClick} />
+      </div>
+
     </div>
   );
 };

@@ -69,6 +69,7 @@ declare type Transaction = {
   paymentChannel: string;
   type: string;
   accountId: string;
+  transactionId: string,
   amount: number;
   pending: boolean;
   category: string;
@@ -81,6 +82,12 @@ declare type Transaction = {
   receiverBankId: string;
   logoUrl: string;
 };
+
+declare type TransactionsData = {
+  transactions : Transaction[],
+  totalTransactions: number,
+  totalPages: number
+}
 
 declare type Bank = {
   $id: string;

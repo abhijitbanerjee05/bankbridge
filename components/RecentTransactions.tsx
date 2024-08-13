@@ -1,29 +1,21 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import TransactionsTable from './TransactionsTable';
-import AccountSelectionTab from './AccountSelectionTab';
 import { CgSpinner } from "react-icons/cg";
-import {
-    Pagination,
-    PaginationContent,
-    PaginationEllipsis,
-    PaginationItem,
-    PaginationLink,
-    PaginationNext,
-    PaginationPrevious,
-} from "@/components/ui/pagination";
 import { fetchAllTransactions } from '@/lib/actions/user.actions';
+import TransactionsPagination from './TransactionsPagination';
 
 const RecentTransactions = () => {
     const [transactions, setTransactions] = useState<Transaction[]>([])
     const [loading, setLoading] = useState(true);
-    const [pageNumber, setPageNumber] = useState(1);
-    const [pageNumberArray, setPageNumberArray] = useState([]);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [totalPages, setTotalPages] = useState<number>(0)
 
-    const loadTransactions = async () => {
+    const loadTransactions = async (page: number) => {
         try {
-            const transactions = await fetchAllTransactions(pageNumber, 10);
-            setTransactions(transactions);
+            const transactionsData = await fetchAllTransactions(page, 10);
+            setTransactions(transactionsData?.transactions);
+            setTotalPages(transactionsData?.totalPages)
         } catch (error) {
             console.error("Error fetching transactions", error);
         } finally {
@@ -31,33 +23,27 @@ const RecentTransactions = () => {
         }
     };
 
+    const handlePageClick = (page: number) => {
+        setLoading(true);
+        const fetchTransactions = async (page: number) => {
+            await loadTransactions(page);
+        }
+        setCurrentPage(page)
+        fetchTransactions(page);
+    }
+
     useEffect(() => {
-        loadTransactions();
+        loadTransactions(currentPage);
     }, []);
+
     return (
         <>
             <h2 className='text-xl font-bold'>Recent Transactions</h2>
-            <AccountSelectionTab />
             {
                 loading ? <div className='py-8 mx-auto'><CgSpinner className='h-10 w-10 loader' /></div>
                     : <TransactionsTable transactions={transactions} />
             }
-            <Pagination>
-                <PaginationContent>
-                    <PaginationItem>
-                        <PaginationPrevious href="#" />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationLink href="#" isActive>1</PaginationLink>
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationEllipsis />
-                    </PaginationItem>
-                    <PaginationItem>
-                        <PaginationNext href="#" />
-                    </PaginationItem>
-                </PaginationContent>
-            </Pagination>
+            <TransactionsPagination currentPage={currentPage} totalPages={totalPages} handlePageClick={handlePageClick} />
         </>
     )
 }
