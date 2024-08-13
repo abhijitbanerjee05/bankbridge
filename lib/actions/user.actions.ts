@@ -19,26 +19,31 @@ export const signUp = async (userData: SignUpParams) => {
     }
 }
 
-export const fetchAllTransactions = async (pageNumber : number, pageCount: number) : Promise<Transaction[]> => {
+export const fetchAllTransactions = async (pageNumber : number, pageSize: number) : Promise<TransactionsData> => {
     const transactionsRequest = {
         userId: "d43cc601-df38-477e-8362-e85e51109690",
         startDate: "2024-01-01",
         endDate: "2024-06-01",
         pageNumber: pageNumber,
-        pageCount: pageCount
+        pageSize: pageSize
     }
     const response = await axios.post("/transactions", transactionsRequest);
-    console.log(response.data.transactions);
-    return response.data?.transactions;
+    console.log(transactionsRequest);
+    const transactionsData : TransactionsData = {
+        transactions : response.data?.transactions,
+        totalPages : response.data?.totalPages,
+        totalTransactions : response.data?.totalTransactions
+    }
+    return transactionsData;
 }
 
-export const fetchAccountTransactions = async (account : Account, pageNumber : number, pageCount: number) : Promise<Transaction[]> => {
+export const fetchAccountTransactions = async (account : Account, pageNumber : number, pageSize: number) : Promise<Transaction[]> => {
     const transactionsRequest = {
         userId: "d43cc601-df38-477e-8362-e85e51109690",
         startDate: "2024-01-01",
         endDate: "2024-06-01",
         pageNumber: pageNumber,
-        pageCount: pageCount,
+        pageSize: pageSize,
         accountId: account.accountId
     }
     const response = await axios.post("/transactions", transactionsRequest);
