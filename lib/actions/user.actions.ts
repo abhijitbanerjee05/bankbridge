@@ -37,7 +37,7 @@ export const fetchAllTransactions = async (pageNumber : number, pageSize: number
     return transactionsData;
 }
 
-export const fetchAccountTransactions = async (account : Account, pageNumber : number, pageSize: number) : Promise<Transaction[]> => {
+export const fetchAccountTransactions = async (account : Account, pageNumber : number, pageSize: number) : Promise<TransactionsData> => {
     const transactionsRequest = {
         userId: "d43cc601-df38-477e-8362-e85e51109690",
         startDate: "2024-01-01",
@@ -48,7 +48,12 @@ export const fetchAccountTransactions = async (account : Account, pageNumber : n
     }
     const response = await axios.post("/transactions", transactionsRequest);
     console.log(response.data.transactions);
-    return response.data?.transactions;
+    const transactionsData : TransactionsData = {
+        transactions : response.data?.transactions,
+        totalPages : response.data?.totalPages,
+        totalTransactions : response.data?.totalTransactions
+    }
+    return transactionsData;
 }
 
 export const fetchBankAccounts = async () : Promise<Account[]>=> {
