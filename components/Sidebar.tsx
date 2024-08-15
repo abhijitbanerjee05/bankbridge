@@ -3,13 +3,30 @@ import { sidebarLinks } from '@/constants'
 import { cn } from '@/lib/utils'
 import Image from 'next/image'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import React from 'react'
+import { usePathname, useRouter } from 'next/navigation'
+import React, { useState, useEffect } from 'react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { IoIosLogOut } from "react-icons/io";
+import { clearGlobalUser, getGlobalUser } from '@/lib/actions/user.actions'
 
-const Sidebar = ({ user }: SiderbarProps) => {
-    const pathname = usePathname()
+const Sidebar = () => {
+    const pathname = usePathname();
+    const [user, setUser] = useState<User | null>(null);
+
+    useEffect(() => {
+        const fetchUser = async () => {
+            const userData = await getGlobalUser(); // Await the promise
+            setUser(userData); // Set the user data in state
+        };
+
+        fetchUser();
+    }, []);
+    const router = useRouter();
+    const handleLogoutClick = () => {
+        clearGlobalUser();
+        router.push('/sign-up')
+    }
+
     return (
         <section className='sidebar'>
             <nav className='flex flex-col gap-4'>
@@ -41,9 +58,9 @@ const Sidebar = ({ user }: SiderbarProps) => {
                         <AvatarImage src="images/blank-profile-picture.png" />
                         <AvatarFallback>CN</AvatarFallback>
                     </Avatar>
-                    <h2 className='cursor-pointer hidden xl:block'>Abhijit Banerjee</h2>
+                    <h2 className='cursor-pointer hidden xl:block'>{`${user?.firstName} ${user?.lastName}`}</h2>
                 </div>
-                <IoIosLogOut className='cursor-pointer h-6 w-6  hidden xl:block' />
+                <IoIosLogOut className='cursor-pointer h-6 w-6  hidden xl:block' onClick={() => handleLogoutClick()} />
             </div>
         </section>
     )

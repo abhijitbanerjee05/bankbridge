@@ -3,9 +3,21 @@ import BankCard from '@/components/BankCard'
 import React, { useState, useEffect } from 'react'
 import HeaderBox from '@/components/HeaderBox'
 import { CgSpinner } from "react-icons/cg";
-import { fetchBankAccounts } from '@/lib/actions/user.actions'
+import { fetchBankAccounts, getGlobalUser } from '@/lib/actions/user.actions'
+import { useRouter } from 'next/navigation';
 
 const MyBanks = () => {
+  const router = useRouter()
+  const [user, setUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const userData = await getGlobalUser(); // Await the promise
+      setUser(userData); // Set the user data in state
+    };
+
+    fetchUser();
+  }, []);
   const [bankAccounts, setBankAccounts] = useState<Account[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -44,12 +56,9 @@ const MyBanks = () => {
                   <BankCard
                     key={a.name}
                     account={a}
-                    userName={'Abhijit'}
+                    userName={user ? user.firstName + ' ' + user.lastName : ''}
                   />
                 ))}
-
-
-                {/* <BankCard account={account} userName='Abhijit' /> */}
               </div>
           }
         </div>

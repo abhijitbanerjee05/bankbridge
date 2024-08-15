@@ -8,31 +8,28 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import CustomSignInInput from './CustomInput'
-import { signInFormSchema, signUpFormSchema } from '@/lib/utils'
+import { signInFormSchema, signUpFormSchema} from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { signUp } from '@/lib/actions/user.actions'
+import { createLinkToken, exchangePublicToken, setGlobalUser, signUp } from '@/lib/actions/user.actions'
 import { usePlaidLink, PlaidLinkOptions, PlaidLinkOnSuccess } from 'react-plaid-link';
-import axios from 'axios';
-import CustomSignUpInput from './CustomSignUpInput'
+import CustomSignUpInput from './CustomSignUpInput';
 
 const AuthForm = ({ type }: { type: string }) => {
-    axios.defaults.baseURL = 'http://localhost:8080/api';
-    const [token, setToken] = useState('');
+    const [token, setToken] = useState<string>('');
     const router = useRouter()
-    const [user, setuser] = useState()
+    const [user, setuser] = useState<User>()
     const [isLoading, setIsLoading] = useState(false)
 
     const signInSchema = signInFormSchema()
     const signUpSchema = signUpFormSchema()
 
     useEffect(() => {
-        async function fetch() {
-            const response = await axios.get('/create-link-token');
-            console.log(response.data.linkToken);
-            setToken(response.data.linkToken);
+        const fetchLinkToken = async () => {
+            const linkToken = await createLinkToken();
+            setToken(linkToken);
         }
-        fetch();
+        fetchLinkToken()
     }, [])
 
     // 1. Form Definition
@@ -56,20 +53,9 @@ const AuthForm = ({ type }: { type: string }) => {
         setIsLoading(true)
         try {
             if (type === 'sign-up') {
-                // const userData: SignUpParams = {
-                //     firstName: data.firstName,
-                //     lastName: data.lastName,
-                //     address1: data.address1,
-                //     city: data.city,
-                //     state: data.state,
-                //     postalCode: data.postalCode,
-                //     dateOfBirth: data.dateOfBirth,
-                //     ssn: data.ssn,
-                //     email: data.email,
-                //     password: data.password,
-                // }
-                const newUser = await signUp(data)
-                // setuser(newUser)
+                const newUser = await signUp(data);
+                await setGlobalUser(newUser)
+                setuser(newUser);
             }
             if (type === 'sign-in') {
                 // const response = await signIn({
@@ -88,12 +74,7 @@ const AuthForm = ({ type }: { type: string }) => {
     }
 
     const onSuccess = useCallback<PlaidLinkOnSuccess>(async (public_token: string) => {
-        // await exchangePublicToken({
-        //   publicToken: public_token,
-        //   user,
-        // })
-
-        console.log(public_token)
+        await exchangePublicToken(public_token);
         router.push('/');
         console.log("Link Successful!!")
     }, [user])
@@ -133,7 +114,7 @@ const AuthForm = ({ type }: { type: string }) => {
                     </div>
                 </header>
                 {user ? (
-                    <button onClick={() => open()} disabled={!ready} className='bg-bankGradient'>
+                    <button onClick={() => open()} disabled={!ready} className='bg-bankGradient py-3 rounded-xl text-white'>
                         Connect a bank account
                     </button>
                 )
