@@ -60,6 +60,13 @@ declare type Account = {
   sharableId?: string;
 };
 
+declare type AccountsData = {
+  accounts : Account[],
+  totalNumberOfAccounts : string,
+  totalCurrentBalance : string,
+  totalAvailableBalance : string
+}
+
 declare type Transaction = {
   id: string;
   $id: string;
@@ -210,8 +217,8 @@ declare interface BankTabItemProps {
 
 declare interface TotlaBalanceBoxProps {
   accounts: Account[];
-  totalBanks: number;
-  totalCurrentBalance: number;
+  totalBanks: string;
+  totalCurrentBalance: string;
 }
 
 declare interface FooterProps {
