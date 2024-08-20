@@ -4,6 +4,15 @@ import { cookies } from 'next/headers'
 
 axios.defaults.baseURL = 'http://ec2-3-149-233-160.us-east-2.compute.amazonaws.com:8080/api';
 
+const getCurrentDateFormatted = () => {
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+
+    return `${year}-${month}-${day}`;
+}
+
 export const signIn = async () => {
     try {
 
@@ -54,12 +63,12 @@ export const fetchAllTransactions = async (pageNumber: number, pageSize: number)
     const transactionsRequest = {
         userId: user?.userId,
         startDate: "2024-01-01",
-        endDate: "2024-06-01",
+        endDate: getCurrentDateFormatted(),
         pageNumber: pageNumber,
         pageSize: pageSize
     }
-    console.log(transactionsRequest);
     const response = await axios.post("/transactions", transactionsRequest);
+    console.log(response.data.transactions);
     const transactionsData: TransactionsData = {
         transactions: response.data?.transactions,
         totalPages: response.data?.totalPages,
@@ -73,7 +82,7 @@ export const fetchAccountTransactions = async (account: Account, pageNumber: num
     const transactionsRequest = {
         userId: user?.userId,
         startDate: "2024-01-01",
-        endDate: "2024-06-01",
+        endDate: getCurrentDateFormatted(),
         pageNumber: pageNumber,
         pageSize: pageSize,
         accountId: account.accountId
