@@ -3,11 +3,12 @@ import HeaderBox from '@/components/HeaderBox'
 import TotalBalanceBox from '@/components/TotalBalanceBox'
 import React, { useState, useEffect } from 'react';
 import RecentTransactions from '@/components/RecentTransactions';
-import { getGlobalUser } from '@/lib/actions/user.actions';
+import { fetchAccountsData, fetchBankAccounts, getGlobalUser } from '@/lib/actions/user.actions';
 import { useRouter } from 'next/navigation';
 
 const Home = () => {
   const [user, setUser] = useState<User | null>(null);
+  const [accountsData, setAccountsData] = useState<AccountsData>();
   const router = useRouter();
 
   useEffect(() => {
@@ -18,8 +19,18 @@ const Home = () => {
       }
       setUser(userData); // Set the user data in state
     };
+    const loadAccountsData = async () => {
+      try {
+        const accounts = await fetchAccountsData();
+        setAccountsData(accounts);
+      } catch (error) {
+        console.error("Error fetching bank accounts", error);
+      } finally {
+      }
+    };
 
     fetchUser();
+    loadAccountsData();
   }, []);
 
   return (
@@ -32,9 +43,9 @@ const Home = () => {
           />
 
           <TotalBalanceBox
-            accounts={[]}
-            totalBanks={1}
-            totalCurrentBalance={1850.30}
+            accounts={accountsData? accountsData.accounts : []}
+            totalBanks={accountsData? accountsData.totalNumberOfAccounts : ''}
+            totalCurrentBalance={accountsData? accountsData.totalCurrentBalance : ''}
           />
 
           <RecentTransactions />

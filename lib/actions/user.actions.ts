@@ -106,6 +106,14 @@ export const fetchBankAccounts = async (): Promise<Account[]> => {
     return response.data?.accounts;
 }
 
+export const fetchAccountsData = async (): Promise<AccountsData> => {
+    const user = await getGlobalUser();
+    const userId = user?.userId;
+    const response = await axios.get(`/accounts/${userId}`);
+    console.log(response.data);
+    return response.data;
+}
+
 export const setGlobalUser = async (user: User) => {
     cookies().set('user', JSON.stringify(user))
     // localStorage.setItem('user', JSON.stringify(user));
