@@ -24,7 +24,13 @@ const Sidebar = () => {
     const router = useRouter();
     const handleLogoutClick = () => {
         clearGlobalUser();
-        router.push('/sign-up')
+        router.push('/sign-in')
+    }
+
+    if (user === null) {
+        return(
+            <div></div>
+        )
     }
 
     return (

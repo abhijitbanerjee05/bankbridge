@@ -8,21 +8,23 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import CustomSignInInput from './CustomInput'
-import { signInFormSchema, signUpFormSchema} from '@/lib/utils'
+import { signInFormSchema, signUpFormSchema } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createLinkToken, exchangePublicToken, setGlobalUser, signUp } from '@/lib/actions/user.actions'
+import { createLinkToken, exchangePublicToken, sendOtp, setGlobalUser, signIn, signUp, verifyUser } from '@/lib/actions/user.actions'
 import { usePlaidLink, PlaidLinkOptions, PlaidLinkOnSuccess } from 'react-plaid-link';
 import CustomSignUpInput from './CustomSignUpInput';
+import OtpPopup from './OtpPopup'
 
 const AuthForm = ({ type }: { type: string }) => {
     const [token, setToken] = useState<string>('');
-    const router = useRouter()
-    const [user, setuser] = useState<User>()
-    const [isLoading, setIsLoading] = useState(false)
+    const router = useRouter();
+    const [user, setuser] = useState<User>();
+    const [isLoading, setIsLoading] = useState(false);
+    const [otpPopup, setOtpPopup] = useState(true);
 
-    const signInSchema = signInFormSchema()
-    const signUpSchema = signUpFormSchema()
+    const signInSchema = signInFormSchema();
+    const signUpSchema = signUpFormSchema();
 
     useEffect(() => {
         const fetchLinkToken = async () => {
@@ -52,25 +54,48 @@ const AuthForm = ({ type }: { type: string }) => {
     const onSignUpSubmit = async (data: z.infer<typeof signUpSchema>) => {
         setIsLoading(true)
         try {
-            if (type === 'sign-up') {
-                const newUser = await signUp(data);
-                await setGlobalUser(newUser)
-                setuser(newUser);
-            }
-            if (type === 'sign-in') {
-                // const response = await signIn({
-                //     email: data.email,
-                //     password: data.password
-                // })
-                // if (response) {
-                //     router.push('/')
-                // }
-            }
+            const newUser = await signUp(data);
+            await setGlobalUser(newUser)
+            setuser(newUser);
         } catch (error) {
             console.log(error)
         }
         console.log(data)
         setIsLoading(false)
+    }
+
+    const onSignInSubmit = async (data: z.infer<typeof signInSchema>) => {
+        setIsLoading(true)
+        try {
+            const user = await signIn(data);
+            setGlobalUser(user);
+            setuser(user);
+            if (user.verified) {
+                router.push('/');
+            } else {
+                await sendOtp({email : data.email, message: 'BankBridge OTP!'})
+                setOtpPopup(true);
+            }
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    
+    const submitOtp = (otp : string) => {
+        async function verifyOtp (otp : string) {
+            const isUserVerified =  await verifyUser({
+                email: user ? user.email : '',
+                message: 'BankBridge OTP!',
+                otp: otp
+            });
+            if (isUserVerified) {
+                router.push('/');
+            } else {
+                
+            }
+        }
+
+        verifyOtp(otp);
     }
 
     const onSuccess = useCallback<PlaidLinkOnSuccess>(async (public_token: string) => {
@@ -123,7 +148,7 @@ const AuthForm = ({ type }: { type: string }) => {
                             {/* Sign In Form */}
                             {type === 'sign-in' ? (
                                 <Form {...signInForm}>
-                                    <form className="space-y-4">
+                                    <form onSubmit={signUpForm.handleSubmit(onSignInSubmit)} className="space-y-4">
                                         <CustomSignInInput control={signInForm.control} name='email' label='Email' placeholder={'Enter your email'} />
                                         <CustomSignInInput control={signInForm.control} name='password' label='Password' placeholder={'Enter your password'} />
                                         <div className='flex flex-col gap-4'>
@@ -157,6 +182,7 @@ const AuthForm = ({ type }: { type: string }) => {
                                             <CustomSignUpInput control={signUpForm.control} name='dateOfBirth' label='Date of Birth' placeholder={'yyyy-mm-dd'} />
                                             <CustomSignUpInput control={signUpForm.control} name='ssn' label='SSN' placeholder={'ex: 1234'} />
                                         </div>
+                                        <CustomSignUpInput control={signUpForm.control} name='phoneNumber' label='Phone Number' placeholder={'Enter your phone number'} />
                                         <CustomSignUpInput control={signUpForm.control} name='email' label='Email' placeholder={'Enter your email'} />
                                         <CustomSignUpInput control={signUpForm.control} name='password' label='Password' placeholder={'Enter your password'} />
                                         <div className='flex flex-col gap-4'>
@@ -210,6 +236,9 @@ const AuthForm = ({ type }: { type: string }) => {
                     />
                 </div>
             </div>
+
+            {/* Otp Popup */}
+            <OtpPopup isVisible={otpPopup} submitOtp={submitOtp} />
         </section>
     )
 }

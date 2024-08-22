@@ -2,7 +2,7 @@
 import axios from "axios";
 import { cookies } from 'next/headers'
 
-axios.defaults.baseURL = 'http://ec2-3-149-233-160.us-east-2.compute.amazonaws.com:8080/api';
+axios.defaults.baseURL = 'http://localhost:8080/api';
 
 const getCurrentDateFormatted = () => {
     const date = new Date();
@@ -13,12 +13,10 @@ const getCurrentDateFormatted = () => {
     return `${year}-${month}-${day}`;
 }
 
-export const signIn = async () => {
-    try {
-
-    } catch (error) {
-        console.log('Error', error)
-    }
+export const signIn = async (userData: LoginUser): Promise<User> => {
+    const response = await axios.post("/auth/signin", userData);
+    console.log(response.data);
+    return response.data;
 }
 
 export const signUp = async (userData: SignUpParams): Promise<User> => {
@@ -33,12 +31,28 @@ export const signUp = async (userData: SignUpParams): Promise<User> => {
         ssn: userData.ssn,
         email: userData.email,
         password: userData.password,
-        phoneNumber: '8888888888'
+        phoneNumber: userData.phoneNumber
     };
+    console.log(signUpRequest);
 
-    const response = await axios.post("/create", signUpRequest);
+    const response = await axios.post("/auth/signup", signUpRequest);
     console.log(response.data);
     return response.data;
+}
+
+export const sendOtp = async (otpData : SendOTP) => {
+    const response = await axios.post("/auth/sendOtp", otpData)
+    console.log(response.data);
+}
+
+export const verifyUser = async (otpData : SendOTP) : Promise<boolean> => {
+    const response = await axios.post("/auth/verifyUser", otpData)
+    if (response.status === 200) {
+        console.log(response.data);
+        return true;
+    } else {
+        return false;
+    }
 }
 
 export const createLinkToken = async (): Promise<string> => {

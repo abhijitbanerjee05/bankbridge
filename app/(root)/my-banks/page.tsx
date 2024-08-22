@@ -5,15 +5,17 @@ import HeaderBox from '@/components/HeaderBox'
 import { CgSpinner } from "react-icons/cg";
 import { fetchBankAccounts, getGlobalUser } from '@/lib/actions/user.actions'
 import { useRouter } from 'next/navigation';
+import ScreenLoader from '@/components/ScreenLoader';
 
 const MyBanks = () => {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null);
+  const [isScreenLoading, setIsScreenLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const userData = await getGlobalUser(); // Await the promise
-      setUser(userData); // Set the user data in state
+      const userData = await getGlobalUser();
+      setUser(userData);
     };
 
     fetchUser();
@@ -30,11 +32,16 @@ const MyBanks = () => {
         console.error("Error fetching bank accounts", error);
       } finally {
         setLoading(false);
+        setIsScreenLoading(false);
       }
     };
 
     loadBankAccounts();
   }, []);
+
+  if (isScreenLoading) {
+    return (<ScreenLoader />)
+  }
 
   return (
     <section className='flex'>
