@@ -18,7 +18,7 @@ const DoughnutChart = ({ accounts }: {accounts : Account[]}) => {
     const data = {
         datasets : [
             {
-                label: 'Banks',
+                label: 'Balance',
                 data: getBalance(),
                 backgroundColor: ['#0747b6', '#2265d8', '#2f91fa']
             }

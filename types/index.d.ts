@@ -55,6 +55,9 @@ declare type SendOTP = {
   message: string;
   otp?: string;
 };
+  message?: string;
+  otp?: string
+}
 
 declare type Account = {
   accountId?: string;
