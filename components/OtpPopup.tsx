@@ -89,14 +89,14 @@ const OtpPopup = ({ isVisible, otpSubmitLoader, otpError, submitOtp }: { isVisib
                                     <>
                                         <Loader2 className='animate-spin' /> &nbsp; Loading...
                                     </>
-                                ) : 'Submit'
+                                ) : <span>Submit</span>
                                 }
                             </Button>
                         </form>
                     </Form>
                 </div>
                 <div className='flex flex-col justify-end gap-1'>
-                    <p className='text-gray-600 text-16 text-right'>Didn't get the otp?</p>
+                    <p className='text-gray-600 text-16 text-right'>Didn&apos;t get the otp?</p>
                     <div className='flex justify-end'>
                         <button className={`${secondsRemaining > 0 ? 'text-gray-600' : 'text-bankGradient'} w-fit ml-auto font-semibold`} disabled={secondsRemaining > 0}>Resend</button>
                         {secondsRemaining > 0 && <p className='text-gray-600'>&nbsp;in {secondsRemaining}</p>}
