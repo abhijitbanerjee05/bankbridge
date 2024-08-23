@@ -84,12 +84,15 @@ const AuthForm = ({ type }: { type: string }) => {
         try {
             const signedUser = await signIn(data);
             if (signedUser) {
+                console.log('user exists');
                 setSignInError(false);
                 setuser(signedUser);
                 if (signedUser.verified) {
-                    setGlobalUser(signedUser);
+                    console.log('user verified');
+                    await setGlobalUser(signedUser);
                     router.push('/');
                 } else {
+                    console.log('sending otp');
                     await sendOtp({ email: data.email})
                     setOtpPopup(true);
                 }
@@ -114,7 +117,7 @@ const AuthForm = ({ type }: { type: string }) => {
             console.log(`is user verified: ${isUserOtpVerified}`);
             console.log(user);
             if (isUserOtpVerified) {
-                user && setGlobalUser(user);
+                user && await setGlobalUser(user);
                 if (user?.linked) {
                     router.push('/');
                 } else {
