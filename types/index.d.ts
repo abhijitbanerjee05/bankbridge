@@ -18,6 +18,7 @@ declare type SignUpParams = {
   ssn: string;
   email: string;
   password: string;
+  phoneNumber: string;
 };
 
 declare type LoginUser = {
@@ -31,12 +32,15 @@ declare type User = {
   userId: string;
   firstName: string;
   lastName: string;
+  phoneNumber: string;
   address1: string;
   city: string;
   state: string;
   postalCode: string;
   dateOfBirth: string;
   ssn: string;
+  verified: boolean;
+  linked: boolean;
 };
 
 declare type NewUserParams = {
@@ -45,6 +49,12 @@ declare type NewUserParams = {
   name: string;
   password: string;
 };
+
+declare type SendOTP = {
+  email: string;
+  message: string;
+  otp?: string
+}
 
 declare type Account = {
   accountId?: string,

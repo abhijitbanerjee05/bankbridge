@@ -31,7 +31,7 @@ const MobileNav = () => {
     const router = useRouter();
     const handleLogoutClick = () => {
         clearGlobalUser();
-        router.push('/sign-up')
+        router.push('/sign-in')
     }
 
     return (

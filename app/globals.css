@@ -43,6 +43,62 @@
   background: #7878a3;
 }
 
+/* Manually replace the variables with their values */
+.custom-svg {
+  overflow: visible;
+  width: 100px;
+  height: 150px;
+
+  g {
+    animation: slide 2s linear infinite;
+
+    &:nth-child(2) {
+      animation-delay: 0.5s; /* $transition-duration / 4 */
+
+      path {
+        animation-delay: 0.5s;
+        stroke-dasharray: 0px 158px; /* $path-length + 1 */
+        stroke-dashoffset: 1px;
+      }
+    }
+  }
+
+  path {
+    stroke: url(#gradient);
+    stroke-width: 20px;
+    stroke-linecap: round;
+    fill: none;
+    stroke-dasharray: 0 157px; /* $path-length */
+    stroke-dashoffset: 0;
+    animation: escalade 1.5s cubic-bezier(0.8, 0, 0.2, 1) infinite;
+  }
+}
+
+@keyframes slide {
+  0% {
+    transform: translateY(-50px);
+  }
+  100% {
+    transform: translateY(50px);
+  }
+}
+
+@keyframes escalade {
+  0% {
+    stroke-dasharray: 0 157px; /* $path-length */
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 157px 157px; /* $path-length */
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dasharray: 157px 157px; /* $path-length */
+    stroke-dashoffset: -156px; /* -($path-length - 1) */
+  }
+}
+
+
 @layer utilities {
   .input-class {
     @apply text-16 placeholder:text-16 rounded-lg border border-gray-300 text-gray-900 placeholder:text-gray-500;

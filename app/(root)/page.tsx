@@ -5,17 +5,19 @@ import React, { useState, useEffect } from 'react';
 import RecentTransactions from '@/components/RecentTransactions';
 import { fetchAccountsData, fetchBankAccounts, getGlobalUser } from '@/lib/actions/user.actions';
 import { useRouter } from 'next/navigation';
+import ScreenLoader from '@/components/ScreenLoader';
 
 const Home = () => {
   const [user, setUser] = useState<User | null>(null);
   const [accountsData, setAccountsData] = useState<AccountsData>();
+  const [isLoading, setIsLoading] = useState(true)
   const router = useRouter();
 
   useEffect(() => {
     const fetchUser = async () => {
       const userData = await getGlobalUser(); // Await the promise
       if (!userData) {
-        router.push('/sign-up')
+        router.push('/sign-in')
       }
       setUser(userData); // Set the user data in state
     };
@@ -26,12 +28,19 @@ const Home = () => {
       } catch (error) {
         console.error("Error fetching bank accounts", error);
       } finally {
+        setIsLoading(false)
       }
     };
 
     fetchUser();
     loadAccountsData();
   }, []);
+
+  if (isLoading) {
+    return (
+      <ScreenLoader />
+    )
+  }
 
   return (
     <section className='home'>
@@ -43,9 +52,9 @@ const Home = () => {
           />
 
           <TotalBalanceBox
-            accounts={accountsData? accountsData.accounts : []}
-            totalBanks={accountsData? accountsData.totalNumberOfAccounts : ''}
-            totalCurrentBalance={accountsData? accountsData.totalCurrentBalance : ''}
+            accounts={accountsData ? accountsData.accounts : []}
+            totalBanks={accountsData ? accountsData.totalNumberOfAccounts : ''}
+            totalCurrentBalance={accountsData ? accountsData.totalCurrentBalance : ''}
           />
 
           <RecentTransactions />
