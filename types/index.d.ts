@@ -40,6 +40,7 @@ declare type User = {
   dateOfBirth: string;
   ssn: string;
   verified: boolean;
+  linked: boolean;
 };
 
 declare type NewUserParams = {

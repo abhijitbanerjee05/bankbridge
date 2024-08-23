@@ -8,10 +8,11 @@ import { useForm } from "react-hook-form"
 import { Button } from "@/components/ui/button"
 import { Form } from "@/components/ui/form"
 import CustomSignInInput from './CustomInput'
+import { Eye, EyeOff } from 'lucide-react';
 import { signInFormSchema, signUpFormSchema } from '@/lib/utils'
 import { Loader2 } from 'lucide-react'
 import { useRouter } from 'next/navigation'
-import { createLinkToken, exchangePublicToken, sendOtp, setGlobalUser, signIn, signUp, verifyUser } from '@/lib/actions/user.actions'
+import { createLinkToken, exchangePublicToken, getGlobalUser, sendOtp, setGlobalUser, signIn, signUp, verifyUser } from '@/lib/actions/user.actions'
 import { usePlaidLink, PlaidLinkOptions, PlaidLinkOnSuccess } from 'react-plaid-link';
 import CustomSignUpInput from './CustomSignUpInput';
 import OtpPopup from './OtpPopup'
@@ -21,7 +22,10 @@ const AuthForm = ({ type }: { type: string }) => {
     const router = useRouter();
     const [user, setuser] = useState<User>();
     const [isLoading, setIsLoading] = useState(false);
-    const [otpPopup, setOtpPopup] = useState(true);
+    const [otpPopup, setOtpPopup] = useState(false);
+    const [otpSubmitLoader, setOtpSubmitLoader] = useState(false)
+    const [signInError, setSignInError] = useState(false);
+    const [otpError, setOtpError] = useState(false);
 
     const signInSchema = signInFormSchema();
     const signUpSchema = signUpFormSchema();
@@ -31,7 +35,16 @@ const AuthForm = ({ type }: { type: string }) => {
             const linkToken = await createLinkToken();
             setToken(linkToken);
         }
+        const fetchUser = async () => {
+            const userData = await getGlobalUser();
+            userData && setuser(userData);
+            if (userData?.verified) {
+                router.push('/');
+            }
+        };
+
         fetchLinkToken()
+        fetchUser();
     }, [])
 
     // 1. Form Definition
@@ -57,6 +70,8 @@ const AuthForm = ({ type }: { type: string }) => {
             const newUser = await signUp(data);
             await setGlobalUser(newUser)
             setuser(newUser);
+            await sendOtp({ email: data.email, message: 'BankBridge OTP!' })
+            setOtpPopup(true);
         } catch (error) {
             console.log(error)
         }
@@ -65,34 +80,51 @@ const AuthForm = ({ type }: { type: string }) => {
     }
 
     const onSignInSubmit = async (data: z.infer<typeof signInSchema>) => {
-        setIsLoading(true)
+        setIsLoading(true);
         try {
-            const user = await signIn(data);
-            setGlobalUser(user);
-            setuser(user);
-            if (user.verified) {
-                router.push('/');
+            const signedUser = await signIn(data);
+            console.log(`signed user : ${signedUser}`);
+            if (signedUser) {
+                setSignInError(false);
+                setuser(signedUser);
+                if (signedUser.verified) {
+                    setGlobalUser(signedUser);
+                    router.push('/');
+                } else {
+                    await sendOtp({ email: data.email, message: 'BankBridge OTP!' })
+                    setOtpPopup(true);
+                }
             } else {
-                await sendOtp({email : data.email, message: 'BankBridge OTP!'})
-                setOtpPopup(true);
+                setSignInError(true);
             }
         } catch (error) {
             console.log(error);
+        } finally {
+            setIsLoading(false);
         }
     }
-    
-    const submitOtp = (otp : string) => {
-        async function verifyOtp (otp : string) {
-            const isUserVerified =  await verifyUser({
+
+    const submitOtp = (otp: string) => {
+        async function verifyOtp(otp: string) {
+            setOtpSubmitLoader(true);
+            const isUserOtpVerified = await verifyUser({
                 email: user ? user.email : '',
                 message: 'BankBridge OTP!',
                 otp: otp
             });
-            if (isUserVerified) {
-                router.push('/');
+            console.log(`is user verified: ${isUserOtpVerified}`);
+            console.log(user);
+            if (isUserOtpVerified) {
+                user && setGlobalUser(user);
+                if (user?.linked) {
+                    router.push('/');
+                } else {
+                    setOtpPopup(false);
+                }
             } else {
-                
+                setOtpError(true);
             }
+            setOtpSubmitLoader(false);
         }
 
         verifyOtp(otp);
@@ -138,7 +170,7 @@ const AuthForm = ({ type }: { type: string }) => {
                         </h1>
                     </div>
                 </header>
-                {user ? (
+                {user && !user.verified && !isLoading ? (
                     <button onClick={() => open()} disabled={!ready} className='bg-bankGradient py-3 rounded-xl text-white'>
                         Connect a bank account
                     </button>
@@ -148,9 +180,10 @@ const AuthForm = ({ type }: { type: string }) => {
                             {/* Sign In Form */}
                             {type === 'sign-in' ? (
                                 <Form {...signInForm}>
-                                    <form onSubmit={signUpForm.handleSubmit(onSignInSubmit)} className="space-y-4">
+                                    <form onSubmit={signInForm.handleSubmit(onSignInSubmit)} className="space-y-4">
                                         <CustomSignInInput control={signInForm.control} name='email' label='Email' placeholder={'Enter your email'} />
                                         <CustomSignInInput control={signInForm.control} name='password' label='Password' placeholder={'Enter your password'} />
+                                        {signInError && <div className={`my-2`}><p className='text-red-600 text-16 text-center'>Incorrect Credentials!</p></div>}
                                         <div className='flex flex-col gap-4'>
                                             <Button className='form-btn' type="submit" disabled={isLoading}>
                                                 {isLoading ? (
@@ -238,7 +271,7 @@ const AuthForm = ({ type }: { type: string }) => {
             </div>
 
             {/* Otp Popup */}
-            <OtpPopup isVisible={otpPopup} submitOtp={submitOtp} />
+            <OtpPopup isVisible={otpPopup} submitOtp={submitOtp} otpSubmitLoader={otpSubmitLoader} otpError={otpError} />
         </section>
     )
 }

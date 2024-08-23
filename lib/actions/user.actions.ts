@@ -13,10 +13,16 @@ const getCurrentDateFormatted = () => {
     return `${year}-${month}-${day}`;
 }
 
-export const signIn = async (userData: LoginUser): Promise<User> => {
-    const response = await axios.post("/auth/signin", userData);
-    console.log(response.data);
-    return response.data;
+export const signIn = async (userData: LoginUser): Promise<User | undefined> => {
+    try {
+        const response = await axios.post("/auth/signin", userData);
+        console.log(response.data);
+        if (response.status === 200) {
+            return response.data;
+        }
+    } catch (error) {
+        return undefined;
+    }
 }
 
 export const signUp = async (userData: SignUpParams): Promise<User> => {
@@ -40,17 +46,23 @@ export const signUp = async (userData: SignUpParams): Promise<User> => {
     return response.data;
 }
 
-export const sendOtp = async (otpData : SendOTP) => {
+export const sendOtp = async (otpData: SendOTP) => {
     const response = await axios.post("/auth/sendOtp", otpData)
     console.log(response.data);
 }
 
-export const verifyUser = async (otpData : SendOTP) : Promise<boolean> => {
-    const response = await axios.post("/auth/verifyUser", otpData)
-    if (response.status === 200) {
-        console.log(response.data);
-        return true;
-    } else {
+export const verifyUser = async (otpData: SendOTP): Promise<boolean> => {
+    try {
+        const response = await axios.post("/auth/verifyUser", otpData)
+        if (response.status === 200) {
+            console.log(response.data);
+            return true;
+        } else {
+            return false;
+        }
+    }
+    catch (error) {
+        console.error();
         return false;
     }
 }

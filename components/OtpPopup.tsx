@@ -7,24 +7,24 @@ import {
 import {
     Form,
     FormControl,
-    FormDescription,
     FormField,
     FormItem,
     FormLabel,
     FormMessage,
 } from "@/components/ui/form";
-import { zodResolver } from "@hookform/resolvers/zod"
-import { useForm } from "react-hook-form"
-import { z } from "zod"
-import { sendOtp } from '@/lib/actions/user.actions';
+import { Loader2 } from 'lucide-react';
+import { Button } from "@/components/ui/button";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
 
 const FormSchema = z.object({
-    pin: z.string().min(4, {
-        message: "Your otp must be 4 digits",
+    pin: z.string().min(6, {
+        message: "Your OTP must be 6 digits",
     }),
-})
+});
 
-const OtpPopup = ({ isVisible, submitOtp }: { isVisible: boolean, submitOtp(otp : string) : void }) => {
+const OtpPopup = ({ isVisible, otpSubmitLoader, otpError, submitOtp }: { isVisible: boolean, otpSubmitLoader: boolean, otpError: boolean, submitOtp(otp: string): void }) => {
     const [secondsRemaining, setSecondsRemaining] = useState(60);
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -32,46 +32,50 @@ const OtpPopup = ({ isVisible, submitOtp }: { isVisible: boolean, submitOtp(otp 
         defaultValues: {
             pin: "",
         },
-    })
+    });
 
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         submitOtp(data.pin);
-    }
+    };
 
     useEffect(() => {
-        if (secondsRemaining > 0 && isVisible) {
+        if (isVisible) {
+            setSecondsRemaining(60); // Reset the timer when the popup becomes visible
+
             const timerId = setInterval(() => {
-                setSecondsRemaining(prevSeconds => prevSeconds - 1);
+                setSecondsRemaining(prevSeconds => prevSeconds > 0 ? prevSeconds - 1 : 0);
             }, 1000);
 
             return () => clearInterval(timerId);
         }
-    }, [secondsRemaining]);
+    }, [isVisible]); // Include isVisible in the dependency array
 
     return (
         <div className={`${isVisible ? 'visible' : "hidden"} fixed flex inset-0 justify-center items-center bg-gray-800/20 text-white`}>
             <div className='bg-white p-10 rounded-lg flex flex-col gap-4'>
                 <h1 className='text-24 font-semibold text-gray-900'>
-                    Enter Otp
+                    Enter OTP
                     <p className='text-16 font-normal text-gray-600 mt-2'>
                         Please enter the one-time password sent to your email.
                     </p>
                 </h1>
-                <div className='flex justify-center my-2 text-gray-600'>
+                <div className='flex justify-center text-gray-600 w-full'>
                     <Form {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)}>
+                        <form onSubmit={form.handleSubmit(onSubmit)} className='space-y-4'>
                             <FormField
                                 control={form.control}
                                 name="pin"
                                 render={({ field }) => (
                                     <FormItem>
                                         <FormControl>
-                                            <InputOTP maxLength={4} {...field}>
+                                            <InputOTP maxLength={6} {...field}>
                                                 <InputOTPGroup>
                                                     <InputOTPSlot index={0} />
                                                     <InputOTPSlot index={1} />
                                                     <InputOTPSlot index={2} />
                                                     <InputOTPSlot index={3} />
+                                                    <InputOTPSlot index={4} />
+                                                    <InputOTPSlot index={5} />
                                                 </InputOTPGroup>
                                             </InputOTP>
                                         </FormControl>
@@ -79,10 +83,18 @@ const OtpPopup = ({ isVisible, submitOtp }: { isVisible: boolean, submitOtp(otp 
                                     </FormItem>
                                 )}
                             />
+                            {otpError && <div className={`my-2`}><p className='text-red-800 text-16 text-center'>Incorrect OTP!</p></div>}
+                            <Button className='form-btn w-full' type="submit">
+                                {otpSubmitLoader ? (
+                                    <>
+                                        <Loader2 className='animate-spin' /> &nbsp; Loading...
+                                    </>
+                                ) : 'Submit'
+                                }
+                            </Button>
                         </form>
                     </Form>
                 </div>
-                <button className='bg-bankGradient py-3 rounded-xl'>Submit</button>
                 <div className='flex flex-col justify-end gap-1'>
                     <p className='text-gray-600 text-16 text-right'>Didn't get the otp?</p>
                     <div className='flex justify-end'>
@@ -92,7 +104,7 @@ const OtpPopup = ({ isVisible, submitOtp }: { isVisible: boolean, submitOtp(otp 
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default OtpPopup
+export default OtpPopup;
