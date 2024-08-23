@@ -52,7 +52,7 @@ declare type NewUserParams = {
 
 declare type SendOTP = {
   email: string;
-  message: string;
+  message?: string;
   otp?: string
 }
 

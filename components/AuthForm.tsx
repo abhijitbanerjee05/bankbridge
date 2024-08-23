@@ -70,7 +70,7 @@ const AuthForm = ({ type }: { type: string }) => {
             const newUser = await signUp(data);
             await setGlobalUser(newUser)
             setuser(newUser);
-            await sendOtp({ email: data.email, message: 'BankBridge OTP!' })
+            await sendOtp({ email: data.email})
             setOtpPopup(true);
         } catch (error) {
             console.log(error)
@@ -83,7 +83,6 @@ const AuthForm = ({ type }: { type: string }) => {
         setIsLoading(true);
         try {
             const signedUser = await signIn(data);
-            console.log(`signed user : ${signedUser}`);
             if (signedUser) {
                 setSignInError(false);
                 setuser(signedUser);
@@ -91,7 +90,7 @@ const AuthForm = ({ type }: { type: string }) => {
                     setGlobalUser(signedUser);
                     router.push('/');
                 } else {
-                    await sendOtp({ email: data.email, message: 'BankBridge OTP!' })
+                    await sendOtp({ email: data.email})
                     setOtpPopup(true);
                 }
             } else {
