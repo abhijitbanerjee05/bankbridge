@@ -58,7 +58,7 @@ declare type SendOTP = {
 
 declare type Account = {
   accountId?: string;
-  availableBalance?: number;
+  availableBalance: number;
   currentBalance: number;
   officialName?: string;
   mask?: string;
@@ -75,6 +75,9 @@ declare type AccountsData = {
   totalNumberOfAccounts: string;
   totalCurrentBalance: string;
   totalAvailableBalance: string;
+  totalIncome?: string;
+  totalSpent?: string;
+  totalSavings?: string;
 };
 
 declare type Transaction = {
@@ -227,13 +230,16 @@ declare interface BankTabItemProps {
 
 declare interface TotlaBalanceBoxProps {
   accounts: Account[];
-  totalCurrentBalance: string;
+  totalAvailableBalance: string;
 }
 
-declare interface BalanceInfo {
+declare interface BalanceInfoParams {
   accounts: Account[];
   totalBanks: string;
-  totalCurrentBalance: string;
+  totalAvailableBalance: string;
+  totalIncome: string;
+  totalSpent: string;
+  totalSavings: string;
 }
 
 declare interface FooterProps {

@@ -2,7 +2,8 @@
 import axios from "axios";
 import { cookies } from 'next/headers'
 
-axios.defaults.baseURL = 'http://ec2-3-149-233-160.us-east-2.compute.amazonaws.com:8080/api';
+// axios.defaults.baseURL = 'http://ec2-3-149-233-160.us-east-2.compute.amazonaws.com:8080/api';
+axios.defaults.baseURL = 'http://localhost:8080/api';
 
 const getCurrentDateFormatted = () => {
     const date = new Date();
@@ -127,7 +128,10 @@ export const fetchAccountTransactions = async (account: Account, pageNumber: num
 export const fetchBankAccounts = async (): Promise<Account[]> => {
     const user = await getGlobalUser();
     const userId = user?.userId;
-    const response = await axios.get(`/accounts/${userId}`);
+    const accountsRequest = {
+        userId: userId
+    }
+    const response = await axios.post(`/accountSummary`, accountsRequest);
     console.log(response.data);
     return response.data?.accounts;
 }
@@ -135,14 +139,18 @@ export const fetchBankAccounts = async (): Promise<Account[]> => {
 export const fetchAccountsData = async (): Promise<AccountsData> => {
     const user = await getGlobalUser();
     const userId = user?.userId;
-    const response = await axios.get(`/accounts/${userId}`);
+    const accountsDataRequest = {
+        userId: userId,
+        startDate: "2024-01-01",
+        endDate: getCurrentDateFormatted()
+    }
+    const response = await axios.post(`/accountSummary`, accountsDataRequest);
     console.log(response.data);
     return response.data;
 }
 
 export const setGlobalUser = async (user: User) => {
     cookies().set('user', JSON.stringify(user))
-    // localStorage.setItem('user', JSON.stringify(user));
 };
 
 export const getGlobalUser = async (): Promise<User | null> => {
@@ -151,7 +159,6 @@ export const getGlobalUser = async (): Promise<User | null> => {
     return userData ? JSON.parse(userData) as User : null;
 };
 
-// Method to clear the user data from localStorage
 export const clearGlobalUser = async () => {
     cookies().delete('user')
 };

@@ -21,7 +21,7 @@ interface TransactionsTableProps {
 
 const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
     axios.defaults.baseURL = 'http://localhost:8080/api';
-
+    
     return (
         <>
             <Table>
@@ -38,11 +38,9 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
                 <TableBody>
                     {transactions && transactions.length != 0 && transactions.map((t: Transaction) => {
                         const status = getTransactionStatus(new Date(t.date))
-                        const amount = formatAmount(t.amount)
-
-                        const isDebit = t.type === 'debit';
-                        const isCredit = t.type === 'credit';
-                        return (<TableRow key={t.transactionId} className={`${isDebit || amount && amount[0] === '-' ? 'bg-[#FFFBFA]' : 'bg-[#F6FEF9]'} !over:bg-none !border-b-DEFAULT`}>
+                        const amount = t.amount.toString();
+                        
+                        return (<TableRow key={t.transactionId} className={`${amount && amount[0] === '-' ? 'bg-[#F6FEF9]' : 'bg-[#FFFBFA]'} !over:bg-none !border-b-DEFAULT`}>
                             <TableCell className="max-w-[250px] pl-2 pr-10">
                                 <div className="flex items-center gap-3">
                                     <Avatar>
@@ -55,11 +53,11 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
                                 </div>
                             </TableCell>
 
-                            <TableCell className={`pl-2 pr-10 font-semibold ${isDebit || amount && amount[0] === '-' ?
-                                'text-[#f04438]'
-                                : 'text-[#039855]'
+                            <TableCell className={`pl-2 pr-10 font-semibold ${amount && amount[0] === '-' ?
+                                'text-[#039855]'
+                                : 'text-[#f04438]'
                                 }`}>
-                                {isDebit ? `-${amount}` : isCredit ? amount : amount}
+                                {amount && amount[0] === '-' ? formatAmount(Math.abs(parseInt(amount))) : `-${formatAmount(parseInt(amount))}`}
                             </TableCell>
 
                             <TableCell className="pl-2 pr-10">

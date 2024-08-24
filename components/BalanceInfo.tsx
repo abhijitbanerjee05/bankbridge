@@ -4,16 +4,16 @@ import SpentBox from "./SpentBox";
 import SavingsBox from "./SavingsBox";
 import TotalBalanceBox from "./TotalBalanceBox";
 
-const BalanceInfo = ({ accounts, totalCurrentBalance }: BalanceInfo) => {
+const BalanceInfo = ({ accounts, totalAvailableBalance, totalIncome, totalSpent, totalSavings }: BalanceInfoParams) => {
   return (
     <section className="balance-info">
       <TotalBalanceBox
         accounts={accounts}
-        totalCurrentBalance={totalCurrentBalance}
+        totalAvailableBalance={totalAvailableBalance}
       ></TotalBalanceBox>
-      <IncomeBox totalIncome={"1200"}></IncomeBox>
-      <SpentBox totalSpent={"800"}></SpentBox>
-      <SavingsBox totalSavings={"800"}></SavingsBox>
+      <IncomeBox totalIncome={totalIncome}></IncomeBox>
+      <SpentBox totalSpent={totalSpent}></SpentBox>
+      <SavingsBox totalSavings={totalSavings}></SavingsBox>
     </section>
   );
 };

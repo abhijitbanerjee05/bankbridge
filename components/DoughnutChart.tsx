@@ -12,7 +12,7 @@ const DoughnutChart = ({ accounts }: {accounts : Account[]}) => {
     }
 
     const getBalance = () => {
-        return accounts.map( (a) => a.currentBalance);
+        return accounts.map( (a) => a.availableBalance);
     }
 
     const data = {

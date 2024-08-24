@@ -110,7 +110,7 @@ const TransactionHistory = () => {
           <AccordionTrigger className='text-left'>
             <div>
               <div>{currentBankAccount?.name}</div>
-              <div>{currentBankAccount && formatAmount(currentBankAccount?.currentBalance)}</div>
+              <div>{currentBankAccount && formatAmount(currentBankAccount?.availableBalance)}</div>
             </div>
           </AccordionTrigger>
           <AccordionContent>
@@ -121,7 +121,7 @@ const TransactionHistory = () => {
                 onClick={() => onAccountClick(a)}
               >
                 <div>{a.name}</div>
-                <div>{formatAmount(a.currentBalance)}</div>
+                <div>{formatAmount(a.availableBalance)}</div>
               </div>
             ))}
           </AccordionContent>
