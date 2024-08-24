@@ -52,12 +52,9 @@ declare type NewUserParams = {
 
 declare type SendOTP = {
   email: string;
-  message: string;
+  message?: string;
   otp?: string;
 };
-  message?: string;
-  otp?: string
-}
 
 declare type Account = {
   accountId?: string;
@@ -230,7 +227,6 @@ declare interface BankTabItemProps {
 
 declare interface TotlaBalanceBoxProps {
   accounts: Account[];
-  totalBanks: string;
   totalCurrentBalance: string;
 }
 

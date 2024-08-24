@@ -76,74 +76,71 @@ const AuthForm = ({ type }: { type: string }) => {
     },
   });
 
-    // 2. Submit handler
-    const onSignUpSubmit = async (data: z.infer<typeof signUpSchema>) => {
-        setIsLoading(true)
-        try {
-            const newUser = await signUp(data);
-            await setGlobalUser(newUser)
-            setuser(newUser);
-            await sendOtp({ email: data.email})
-            setOtpPopup(true);
-        } catch (error) {
-            console.log(error)
-        }
-        console.log(data)
-        setIsLoading(false)
+  // 2. Submit handler
+  const onSignUpSubmit = async (data: z.infer<typeof signUpSchema>) => {
+    setIsLoading(true);
+    try {
+      const newUser = await signUp(data);
+      await setGlobalUser(newUser);
+      setuser(newUser);
+      await sendOtp({ email: data.email });
+      setOtpPopup(true);
+    } catch (error) {
+      console.log(error);
     }
     console.log(data);
     setIsLoading(false);
   };
 
-    const onSignInSubmit = async (data: z.infer<typeof signInSchema>) => {
-        setIsLoading(true);
-        try {
-            const signedUser = await signIn(data);
-            if (signedUser) {
-                console.log('user exists');
-                setSignInError(false);
-                setuser(signedUser);
-                if (signedUser.verified) {
-                    console.log('user verified');
-                    await setGlobalUser(signedUser);
-                    router.push('/');
-                } else {
-                    console.log('sending otp');
-                    await sendOtp({ email: data.email})
-                    setOtpPopup(true);
-                }
-            } else {
-                setSignInError(true);
-            }
-        } catch (error) {
-            console.log(error);
-        } finally {
-            setIsLoading(false);
+  const onSignInSubmit = async (data: z.infer<typeof signInSchema>) => {
+    setIsLoading(true);
+    try {
+      const signedUser = await signIn(data);
+      if (signedUser) {
+        console.log("user exists");
+        setSignInError(false);
+        setuser(signedUser);
+        if (signedUser.verified) {
+          console.log("user verified");
+          await setGlobalUser(signedUser);
+          router.push("/");
+        } else {
+          console.log("sending otp");
+          await sendOtp({ email: data.email });
+          setOtpPopup(true);
         }
+      } else {
+        setSignInError(true);
+      }
+    } catch (error) {
+      console.log(error);
+    } finally {
+      setIsLoading(false);
     }
+  };
 
-    const submitOtp = (otp: string) => {
-        async function verifyOtp(otp: string) {
-            setOtpSubmitLoader(true);
-            const isUserOtpVerified = await verifyUser({
-                email: user ? user.email : '',
-                message: 'BankBridge OTP!',
-                otp: otp
-            });
-            console.log(`is user verified: ${isUserOtpVerified}`);
-            console.log(user);
-            if (isUserOtpVerified) {
-                user && await setGlobalUser(user);
-                if (user?.linked) {
-                    router.push('/');
-                } else {
-                    setOtpPopup(false);
-                }
-            } else {
-                setOtpError(true);
-            }
-            setOtpSubmitLoader(false);
+  const submitOtp = (otp: string) => {
+    async function verifyOtp(otp: string) {
+      setOtpSubmitLoader(true);
+      const isUserOtpVerified = await verifyUser({
+        email: user ? user.email : "",
+        message: "BankBridge OTP!",
+        otp: otp,
+      });
+      console.log(`is user verified: ${isUserOtpVerified}`);
+      console.log(user);
+      if (isUserOtpVerified) {
+        user && (await setGlobalUser(user));
+        if (user?.linked) {
+          router.push("/");
+        } else {
+          setOtpPopup(false);
         }
+      } else {
+        setOtpError(true);
+      }
+      setOtpSubmitLoader(false);
+    }
 
     verifyOtp(otp);
   };

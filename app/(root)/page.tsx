@@ -3,13 +3,10 @@ import HeaderBox from "@/components/HeaderBox";
 import BalanceInfo from "@/components/BalanceInfo";
 import React, { useState, useEffect } from "react";
 import RecentTransactions from "@/components/RecentTransactions";
-import {
-  fetchAccountsData,
-  fetchBankAccounts,
-  getGlobalUser,
-} from "@/lib/actions/user.actions";
+import { fetchAccountsData, getGlobalUser } from "@/lib/actions/user.actions";
 import { useRouter } from "next/navigation";
 import ScreenLoader from "@/components/ScreenLoader";
+import { DatePicker } from "@/components/DatePicker";
 
 const Home = () => {
   const [user, setUser] = useState<User | null>(null);
@@ -48,12 +45,17 @@ const Home = () => {
     <section className="home">
       <div className="home-content">
         <header className="home-header">
-          <HeaderBox
-            type="greeting"
-            title="Welcome"
-            user={user?.firstName || "Guest"}
-            subtext="Access and manage your account and transactions!"
-          />
+          <div className="title-box">
+            <HeaderBox
+              type="greeting"
+              title="Welcome"
+              user={user?.firstName || "Guest"}
+              subtext="Access and manage your account and transactions!"
+            />
+            <div className="lg:ml-auto">
+              <DatePicker />
+            </div>
+          </div>
 
           <BalanceInfo
             accounts={accountsData ? accountsData.accounts : []}

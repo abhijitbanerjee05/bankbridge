@@ -455,4 +455,20 @@
   .sidebar-label {
     @apply text-16 font-semibold text-black-2 max-xl:hidden;
   }
+
+  .date-select {
+    @apply hover:bg-gray-100 text-xs md:text-sm font-normal;
+  }
+
+  .date-button {
+    @apply w-full md:w-[250px] justify-start text-left text-xs md:text-sm font-normal hover:bg-gray-100;
+  }
+
+  .select-button {
+    @apply w-full md:w-[150px] lg:w-[150px] text-xs md:text-sm font-normal hover:bg-gray-100;
+  }
+
+  .title-box {
+    @apply flex flex-col lg:flex-row gap-5 md:gap-2;
+  }
 }
