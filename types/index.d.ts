@@ -53,11 +53,11 @@ declare type NewUserParams = {
 declare type SendOTP = {
   email: string;
   message?: string;
-  otp?: string
-}
+  otp?: string;
+};
 
 declare type Account = {
-  accountId?: string,
+  accountId?: string;
   availableBalance?: number;
   currentBalance: number;
   officialName?: string;
@@ -71,11 +71,11 @@ declare type Account = {
 };
 
 declare type AccountsData = {
-  accounts : Account[],
-  totalNumberOfAccounts : string,
-  totalCurrentBalance : string,
-  totalAvailableBalance : string
-}
+  accounts: Account[];
+  totalNumberOfAccounts: string;
+  totalCurrentBalance: string;
+  totalAvailableBalance: string;
+};
 
 declare type Transaction = {
   id: string;
@@ -84,7 +84,7 @@ declare type Transaction = {
   paymentChannel: string;
   type: string;
   accountId: string;
-  transactionId: string,
+  transactionId: string;
   amount: number;
   pending: boolean;
   category: string;
@@ -99,10 +99,10 @@ declare type Transaction = {
 };
 
 declare type TransactionsData = {
-  transactions : Transaction[],
-  totalTransactions: number,
-  totalPages: number
-}
+  transactions: Transaction[];
+  totalTransactions: number;
+  totalPages: number;
+};
 
 declare type Bank = {
   $id: string;
@@ -226,6 +226,11 @@ declare interface BankTabItemProps {
 }
 
 declare interface TotlaBalanceBoxProps {
+  accounts: Account[];
+  totalCurrentBalance: string;
+}
+
+declare interface BalanceInfo {
   accounts: Account[];
   totalBanks: string;
   totalCurrentBalance: string;

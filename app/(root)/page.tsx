@@ -1,23 +1,24 @@
-"use client"
-import HeaderBox from '@/components/HeaderBox'
-import TotalBalanceBox from '@/components/TotalBalanceBox'
-import React, { useState, useEffect } from 'react';
-import RecentTransactions from '@/components/RecentTransactions';
-import { fetchAccountsData, fetchBankAccounts, getGlobalUser } from '@/lib/actions/user.actions';
-import { useRouter } from 'next/navigation';
-import ScreenLoader from '@/components/ScreenLoader';
+"use client";
+import HeaderBox from "@/components/HeaderBox";
+import BalanceInfo from "@/components/BalanceInfo";
+import React, { useState, useEffect } from "react";
+import RecentTransactions from "@/components/RecentTransactions";
+import { fetchAccountsData, getGlobalUser } from "@/lib/actions/user.actions";
+import { useRouter } from "next/navigation";
+import ScreenLoader from "@/components/ScreenLoader";
+import { DatePicker } from "@/components/DatePicker";
 
 const Home = () => {
   const [user, setUser] = useState<User | null>(null);
   const [accountsData, setAccountsData] = useState<AccountsData>();
-  const [isLoading, setIsLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true);
   const router = useRouter();
 
   useEffect(() => {
     const fetchUser = async () => {
       const userData = await getGlobalUser(); // Await the promise
       if (!userData) {
-        router.push('/sign-in')
+        router.push("/sign-in");
       }
       setUser(userData); // Set the user data in state
     };
@@ -28,7 +29,7 @@ const Home = () => {
       } catch (error) {
         console.error("Error fetching bank accounts", error);
       } finally {
-        setIsLoading(false)
+        setIsLoading(false);
       }
     };
 
@@ -37,31 +38,38 @@ const Home = () => {
   }, []);
 
   if (isLoading) {
-    return (
-      <ScreenLoader />
-    )
+    return <ScreenLoader />;
   }
 
   return (
-    <section className='home'>
-      <div className='home-content'>
-        <header className='home-header'>
-          <HeaderBox
-            type="greeting" title="Welcome" user={user?.firstName || 'Guest'}
-            subtext="Access and manage your account and transactions!"
-          />
+    <section className="home">
+      <div className="home-content">
+        <header className="home-header">
+          <div className="title-box">
+            <HeaderBox
+              type="greeting"
+              title="Welcome"
+              user={user?.firstName || "Guest"}
+              subtext="Access and manage your account and transactions!"
+            />
+            <div className="lg:ml-auto">
+              <DatePicker />
+            </div>
+          </div>
 
-          <TotalBalanceBox
+          <BalanceInfo
             accounts={accountsData ? accountsData.accounts : []}
-            totalBanks={accountsData ? accountsData.totalNumberOfAccounts : ''}
-            totalCurrentBalance={accountsData ? accountsData.totalCurrentBalance : ''}
+            totalBanks={accountsData ? accountsData.totalNumberOfAccounts : ""}
+            totalCurrentBalance={
+              accountsData ? accountsData.totalCurrentBalance : ""
+            }
           />
 
           <RecentTransactions />
         </header>
       </div>
     </section>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
