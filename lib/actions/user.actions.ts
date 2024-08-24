@@ -2,8 +2,8 @@
 import axios from "axios";
 import { cookies } from 'next/headers'
 
-// axios.defaults.baseURL = 'http://ec2-3-149-233-160.us-east-2.compute.amazonaws.com:8080/api';
-axios.defaults.baseURL = 'http://localhost:8080/api';
+axios.defaults.baseURL = 'http://ec2-3-149-233-160.us-east-2.compute.amazonaws.com:8080/api';
+// axios.defaults.baseURL = 'http://localhost:8080/api';
 
 const getCurrentDateFormatted = () => {
     const date = new Date();
