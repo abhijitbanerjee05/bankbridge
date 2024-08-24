@@ -60,9 +60,12 @@ const Home = () => {
           <BalanceInfo
             accounts={accountsData ? accountsData.accounts : []}
             totalBanks={accountsData ? accountsData.totalNumberOfAccounts : ""}
-            totalCurrentBalance={
-              accountsData ? accountsData.totalCurrentBalance : ""
+            totalAvailableBalance={
+              accountsData ? accountsData.totalAvailableBalance : ""
             }
+            totalIncome={accountsData && accountsData.totalIncome ? accountsData.totalIncome : ""}
+            totalSavings={accountsData && accountsData.totalSavings ? accountsData.totalSavings : ""}
+            totalSpent={accountsData && accountsData.totalSpent ? accountsData.totalSpent : ""}
           />
 
           <RecentTransactions />
