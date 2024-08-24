@@ -58,7 +58,7 @@ declare type SendOTP = {
 
 declare type Account = {
   accountId?: string;
-  availableBalance?: number;
+  availableBalance: number;
   currentBalance: number;
   officialName?: string;
   mask?: string;
