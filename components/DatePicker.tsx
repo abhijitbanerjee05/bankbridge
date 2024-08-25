@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { format, startOfMonth, startOfYear, subDays } from "date-fns";
+import { addDays, format, startOfMonth, startOfYear, subDays } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { DateRange } from "react-day-picker";
 
@@ -21,34 +21,42 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 
-export function DatePicker({}: React.HTMLAttributes<HTMLDivElement>) {
-  const today = new Date();
+interface DatePickerProps extends React.HTMLAttributes<HTMLDivElement> {
+  onDateChange: (date: DateRange | undefined) => void;
+}
+
+export function DatePicker({ onDateChange }: DatePickerProps) {
+  const todayEnd = new Date();
+  const todayStart = new Date();
+  todayEnd.setHours(23, 59, 59, 59);
+  todayStart.setHours(0, 0, 0, 0);
+
   const [date, setDate] = React.useState<DateRange | undefined>({
-    from: startOfMonth(today),
-    to: today,
+    from: startOfMonth(todayEnd),
+    to: todayEnd,
   });
   const [selectValue, setSelectValue] = React.useState<string>("");
 
   const dateRanges: { [key: string]: DateRange } = {
     "0": {
-      from: today,
-      to: today,
+      from: todayStart,
+      to: todayEnd,
     },
     "1": {
-      from: subDays(today, 7),
-      to: today,
+      from: subDays(todayStart, 7),
+      to: todayEnd,
     },
     "2": {
-      from: subDays(today, 30),
-      to: today,
+      from: subDays(todayStart, 30),
+      to: todayEnd,
     },
     "3": {
-      from: startOfMonth(today),
-      to: today,
+      from: startOfMonth(todayStart),
+      to: todayEnd,
     },
     "4": {
-      from: startOfYear(today),
-      to: today,
+      from: startOfYear(todayStart),
+      to: todayEnd,
     },
   };
 
@@ -57,12 +65,31 @@ export function DatePicker({}: React.HTMLAttributes<HTMLDivElement>) {
     if (selectedRange) {
       setDate(selectedRange);
       setSelectValue(value);
+      onDateChange(selectedRange); // Send date range to parent
     }
   };
 
   const handleCalendarSelect = (selectedDateRange: DateRange | undefined) => {
-    setDate(selectedDateRange);
-    setSelectValue("");
+    if (selectedDateRange && selectedDateRange.to) {
+      const endOfDay = new Date(selectedDateRange.to.getTime());
+      endOfDay.setHours(23, 59, 59, 999);
+
+      // Create a new date range with the updated 'to' date
+      const updatedDateRange: DateRange = {
+        from: selectedDateRange.from,
+        to: endOfDay,
+      };
+
+      // Update state and notify parent
+      setDate(updatedDateRange);
+      setSelectValue("");
+      onDateChange(updatedDateRange);
+    } else {
+      // Handle the case where selectedDateRange is undefined
+      setDate(undefined);
+      setSelectValue("");
+      onDateChange(undefined);
+    }
   };
 
   React.useEffect(() => {
@@ -123,12 +150,12 @@ export function DatePicker({}: React.HTMLAttributes<HTMLDivElement>) {
             mode="range"
             defaultMonth={date?.from}
             selected={date}
-            onSelect={handleCalendarSelect} // Use handleCalendarSelect method
+            onSelect={handleCalendarSelect}
             numberOfMonths={2}
-            disabled={(date) => date > today}
+            disabled={(date) => date > todayEnd}
             classNames={{
-              day_selected: "bg-blue-500 text-white rounded-lg",
-              day_range_middle: "bg-blue-200 rounded-sm",
+              day_selected: "bg-blue-500 text-white rounded-sm",
+              day_range_middle: "bg-blue-300 rounded-sm",
               day_disabled: "text-gray-500",
             }}
           />
