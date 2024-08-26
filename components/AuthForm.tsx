@@ -182,8 +182,8 @@ const AuthForm = ({ type }: { type: string }) => {
               {user
                 ? "Link Account"
                 : type === "sign-in"
-                ? "Sign In"
-                : "Sign Up"}
+                  ? "Sign In"
+                  : "Sign Up"}
               <p className="text-16 font-normal text-gray-600 mt-2">
                 {user
                   ? "Link your account to get started"
@@ -390,6 +390,7 @@ const AuthForm = ({ type }: { type: string }) => {
         submitOtp={submitOtp}
         otpSubmitLoader={otpSubmitLoader}
         otpError={otpError}
+        email={user?.email}
       />
     </section>
   );

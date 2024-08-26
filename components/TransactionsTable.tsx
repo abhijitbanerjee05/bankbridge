@@ -11,8 +11,7 @@ import {
     Avatar,
     AvatarFallback,
     AvatarImage,
-} from "@/components/ui/avatar"
-import axios from 'axios';
+} from "@/components/ui/avatar";
 import { getTransactionStatus, formatAmount, removeSpecialCharacters, formatDateTime } from '@/lib/utils';
 
 interface TransactionsTableProps {
@@ -20,7 +19,10 @@ interface TransactionsTableProps {
 }
 
 const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
-    axios.defaults.baseURL = 'http://localhost:8080/api';
+    function getProperDate(dateString : string) {
+        const [year, month, day] = dateString.split('-').map(Number);
+        return new Date(year, month - 1, day);
+    }
     
     return (
         <>
@@ -65,7 +67,7 @@ const TransactionsTable = ({ transactions }: TransactionsTableProps) => {
                             </TableCell>
 
                             <TableCell className="min-w-32 pl-2 pr-10">
-                                {formatDateTime(new Date(t.date)).dateTime}
+                                {formatDateTime(getProperDate(t.date)).dateOnly}
                             </TableCell>
 
                             <TableCell className="pl-2 pr-10 capitalize min-w-24 max-md:hidden">

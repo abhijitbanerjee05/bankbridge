@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
+import { sendOtp } from '@/lib/actions/user.actions';
 
 const FormSchema = z.object({
     pin: z.string().min(6, {
@@ -24,7 +25,7 @@ const FormSchema = z.object({
     }),
 });
 
-const OtpPopup = ({ isVisible, otpSubmitLoader, otpError, submitOtp }: { isVisible: boolean, otpSubmitLoader: boolean, otpError: boolean, submitOtp(otp: string): void }) => {
+const OtpPopup = ({ isVisible, otpSubmitLoader, otpError, email,  submitOtp }: { isVisible: boolean, otpSubmitLoader: boolean, otpError: boolean, email : string | undefined, submitOtp(otp: string): void }) => {
     const [secondsRemaining, setSecondsRemaining] = useState(60);
 
     const form = useForm<z.infer<typeof FormSchema>>({
@@ -37,6 +38,14 @@ const OtpPopup = ({ isVisible, otpSubmitLoader, otpError, submitOtp }: { isVisib
     const onSubmit = async (data: z.infer<typeof FormSchema>) => {
         submitOtp(data.pin);
     };
+
+    const handleResend = () => {
+        const fetchSendOtp = async () => {
+            email && await sendOtp({email : email});
+        }
+        fetchSendOtp();
+        setSecondsRemaining(120);
+    }
 
     useEffect(() => {
         if (isVisible) {
@@ -98,7 +107,13 @@ const OtpPopup = ({ isVisible, otpSubmitLoader, otpError, submitOtp }: { isVisib
                 <div className='flex flex-col justify-end gap-1'>
                     <p className='text-gray-600 text-16 text-right'>Didn&apos;t get the otp?</p>
                     <div className='flex justify-end'>
-                        <button className={`${secondsRemaining > 0 ? 'text-gray-600' : 'text-bankGradient'} w-fit ml-auto font-semibold`} disabled={secondsRemaining > 0}>Resend</button>
+                        <button
+                            className={`${secondsRemaining > 0 ? 'text-gray-600' : 'text-bankGradient'} w-fit ml-auto font-semibold`}
+                            disabled={secondsRemaining > 0}
+                            onClick={() => handleResend()}
+                        >
+                            Resend
+                        </button>
                         {secondsRemaining > 0 && <p className='text-gray-600'>&nbsp;in {secondsRemaining}</p>}
                     </div>
                 </div>
