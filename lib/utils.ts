@@ -203,14 +203,14 @@ export const signInFormSchema = () => z.object({
 
 export const signUpFormSchema = () => z.object({
   //fields for sign-up
-  firstName: z.string().min(3),
-  lastName: z.string().min(3),
+  firstName: z.string().min(3).max(50),
+  lastName: z.string().min(3).max(50),
   address1: z.string().min(3).max(50),
   city: z.string().min(3).max(50),
   state: z.string().min(2).max(2),
-  postalCode: z.string().min(3).max(3),
-  dateOfBirth: z.string().min(3),
-  ssn: z.string().min(3),
+  postalCode: z.string().min(3).max(7),
+  dateOfBirth: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, { message: "Date must be in the format yyyy-MM-dd" }),
+  ssn: z.string().min(9).max(9),
   //fields for both, sign-in and sign-up
   email: z.string().email(),
   password: z.string().min(8),
