@@ -15,6 +15,7 @@ import { useRouter } from "next/navigation";
 import {
   createLinkToken,
   exchangePublicToken,
+  getDummyUser,
   getGlobalUser,
   sendOtp,
   setGlobalUser,
@@ -38,7 +39,9 @@ const AuthForm = ({ type }: { type: string }) => {
   const [otpPopup, setOtpPopup] = useState(false);
   const [otpSubmitLoader, setOtpSubmitLoader] = useState(false);
   const [signInError, setSignInError] = useState(false);
+  const [signUpErrorMessage, setSignUpErrorMessage] = useState("");
   const [otpError, setOtpError] = useState(false);
+  const [dummyUserLoading, setDummyUserLoading] = useState(false);
 
   const signInSchema = signInFormSchema();
   const signUpSchema = signUpFormSchema();
@@ -81,9 +84,13 @@ const AuthForm = ({ type }: { type: string }) => {
     setIsLoading(true);
     try {
       const newUser = await signUp(data);
-      await setGlobalUser(newUser);
-      setuser(newUser);
-      setOtpPopup(true);
+      if (typeof newUser === "string") {
+        setSignUpErrorMessage(newUser);
+      } else {
+        await setGlobalUser(newUser);
+        setuser(newUser);
+        setOtpPopup(true);
+      }
     } catch (error) {
       console.log(error);
     }
@@ -160,6 +167,19 @@ const AuthForm = ({ type }: { type: string }) => {
 
   const { open, ready } = usePlaidLink(config);
 
+  const handleDummyUserSignIn = () => {
+    const fetchDummyUser = async () => {
+      setDummyUserLoading(true);
+      const dummyUser = await getDummyUser();
+      if (dummyUser) {
+        await setGlobalUser(dummyUser);
+        router.push("/");
+      }
+      setDummyUserLoading(false);
+    };
+    fetchDummyUser();
+  };
+
   return (
     <section className="lg:grid lg:grid-cols-2 w-full justify-center">
       <div className="mx-auto flex min-h-screen w-full max-w-[420px] flex-col justify-center gap-5 py-10 md:gap-8">
@@ -203,49 +223,69 @@ const AuthForm = ({ type }: { type: string }) => {
           <>
             {/* Sign In Form */}
             {type === "sign-in" ? (
-              <Form {...signInForm}>
-                <form
-                  onSubmit={signInForm.handleSubmit(onSignInSubmit)}
-                  className="space-y-4"
+              <>
+                <Button
+                  className="bg-bankGradient text-white"
+                  onClick={() => handleDummyUserSignIn()}
                 >
-                  <CustomSignInInput
-                    control={signInForm.control}
-                    name="email"
-                    label="Email"
-                    placeholder={"Enter your email"}
-                  />
-                  <CustomSignInInput
-                    control={signInForm.control}
-                    name="password"
-                    label="Password"
-                    placeholder={"Enter your password"}
-                  />
-                  {signInError && (
-                    <div className={`my-2`}>
-                      <p className="text-red-600 text-16 text-center">
-                        Incorrect Credentials!
-                      </p>
-                    </div>
+                  {dummyUserLoading ? (
+                    <>
+                      <Loader2 className="animate-spin" /> &nbsp; Loading...
+                    </>
+                  ) : (
+                    "Sign in with dummy user"
                   )}
-                  <div className="flex flex-col gap-4">
-                    <Button
-                      className="form-btn"
-                      type="submit"
-                      disabled={isLoading}
-                    >
-                      {isLoading ? (
-                        <>
-                          <Loader2 className="animate-spin" /> &nbsp; Loading...
-                        </>
-                      ) : type === "sign-in" ? (
-                        "Sign In"
-                      ) : (
-                        "Sign Up"
-                      )}
-                    </Button>
-                  </div>
-                </form>
-              </Form>
+                </Button>
+                <div className="flex items-center justify-center">
+                  <div className="border-t border-gray-300 flex-grow"></div>
+                  <span className="mx-4 text-gray-500">or</span>
+                  <div className="border-t border-gray-300 flex-grow"></div>
+                </div>
+                <Form {...signInForm}>
+                  <form
+                    onSubmit={signInForm.handleSubmit(onSignInSubmit)}
+                    className="space-y-4"
+                  >
+                    <CustomSignInInput
+                      control={signInForm.control}
+                      name="email"
+                      label="Email"
+                      placeholder={"Enter your email"}
+                    />
+                    <CustomSignInInput
+                      control={signInForm.control}
+                      name="password"
+                      label="Password"
+                      placeholder={"Enter your password"}
+                    />
+                    {signInError && (
+                      <div className={`my-2`}>
+                        <p className="text-red-600 text-16 text-center">
+                          Incorrect Credentials!
+                        </p>
+                      </div>
+                    )}
+                    <div className="flex flex-col gap-4">
+                      <Button
+                        className="form-btn"
+                        type="submit"
+                        disabled={isLoading}
+                      >
+                        {isLoading ? (
+                          <>
+                            <Loader2 className="animate-spin" /> &nbsp;
+                            Loading...
+                          </>
+                        ) : type === "sign-in" ? (
+                          "Sign In"
+                        ) : (
+                          "Sign Up"
+                        )}
+                      </Button>
+                    </div>
+                  </form>
+                </Form>
+              </>
             ) : (
               <Form {...signUpForm}>
                 <form
@@ -324,6 +364,13 @@ const AuthForm = ({ type }: { type: string }) => {
                     label="Password"
                     placeholder={"Enter your password"}
                   />
+                  {signUpErrorMessage.length !== 0 && (
+                    <div className={`my-2`}>
+                      <p className="text-red-600 text-16 text-center">
+                        {signUpErrorMessage}
+                      </p>
+                    </div>
+                  )}
                   <div className="flex flex-col gap-4">
                     <Button
                       className="form-btn"
@@ -389,6 +436,7 @@ const AuthForm = ({ type }: { type: string }) => {
         submitOtp={submitOtp}
         otpSubmitLoader={otpSubmitLoader}
         otpError={otpError}
+        email={user?.email}
       />
     </section>
   );
