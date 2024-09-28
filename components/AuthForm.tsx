@@ -39,7 +39,7 @@ const AuthForm = ({ type }: { type: string }) => {
   const [otpPopup, setOtpPopup] = useState(false);
   const [otpSubmitLoader, setOtpSubmitLoader] = useState(false);
   const [signInError, setSignInError] = useState(false);
-  const [signUpErrorMessage, setSignUpErrorMessage] = useState('');
+  const [signUpErrorMessage, setSignUpErrorMessage] = useState("");
   const [otpError, setOtpError] = useState(false);
   const [dummyUserLoading, setDummyUserLoading] = useState(false);
 
@@ -84,12 +84,11 @@ const AuthForm = ({ type }: { type: string }) => {
     setIsLoading(true);
     try {
       const newUser = await signUp(data);
-      if (typeof (newUser) === 'string') {
+      if (typeof newUser === "string") {
         setSignUpErrorMessage(newUser);
       } else {
         await setGlobalUser(newUser);
         setuser(newUser);
-        await sendOtp({ email: data.email });
         setOtpPopup(true);
       }
     } catch (error) {
@@ -174,12 +173,12 @@ const AuthForm = ({ type }: { type: string }) => {
       const dummyUser = await getDummyUser();
       if (dummyUser) {
         await setGlobalUser(dummyUser);
-        router.push('/');
+        router.push("/");
       }
       setDummyUserLoading(false);
-    }
+    };
     fetchDummyUser();
-  }
+  };
 
   return (
     <section className="lg:grid lg:grid-cols-2 w-full justify-center">
@@ -202,8 +201,8 @@ const AuthForm = ({ type }: { type: string }) => {
               {user
                 ? "Link Account"
                 : type === "sign-in"
-                  ? "Sign In"
-                  : "Sign Up"}
+                ? "Sign In"
+                : "Sign Up"}
               <p className="text-16 font-normal text-gray-600 mt-2">
                 {user
                   ? "Link your account to get started"
@@ -225,14 +224,19 @@ const AuthForm = ({ type }: { type: string }) => {
             {/* Sign In Form */}
             {type === "sign-in" ? (
               <>
-                <Button className="bg-bankGradient text-white" onClick={() => handleDummyUserSignIn()}>
+                <Button
+                  className="bg-bankGradient text-white"
+                  onClick={() => handleDummyUserSignIn()}
+                >
                   {dummyUserLoading ? (
                     <>
                       <Loader2 className="animate-spin" /> &nbsp; Loading...
                     </>
-                  ) : 'Sign in with dummy user'
-                  }
-                </Button><div className="flex items-center justify-center">
+                  ) : (
+                    "Sign in with dummy user"
+                  )}
+                </Button>
+                <div className="flex items-center justify-center">
                   <div className="border-t border-gray-300 flex-grow"></div>
                   <span className="mx-4 text-gray-500">or</span>
                   <div className="border-t border-gray-300 flex-grow"></div>
@@ -269,7 +273,8 @@ const AuthForm = ({ type }: { type: string }) => {
                       >
                         {isLoading ? (
                           <>
-                            <Loader2 className="animate-spin" /> &nbsp; Loading...
+                            <Loader2 className="animate-spin" /> &nbsp;
+                            Loading...
                           </>
                         ) : type === "sign-in" ? (
                           "Sign In"
