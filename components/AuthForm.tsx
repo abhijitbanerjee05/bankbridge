@@ -83,7 +83,6 @@ const AuthForm = ({ type }: { type: string }) => {
       const newUser = await signUp(data);
       await setGlobalUser(newUser);
       setuser(newUser);
-      await sendOtp({ email: data.email });
       setOtpPopup(true);
     } catch (error) {
       console.log(error);
