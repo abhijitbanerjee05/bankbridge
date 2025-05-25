@@ -5,7 +5,7 @@ import { DateRange } from "react-day-picker";
 import { string } from "zod";
 
 axios.defaults.baseURL =
-    "http://ec2-3-149-233-160.us-east-2.compute.amazonaws.com:8080/api";
+    "https://user-service-w3j9.onrender.com/api";
 // axios.defaults.baseURL = 'http://localhost:8080/api';
 
 const getCurrentDateFormatted = () => {
